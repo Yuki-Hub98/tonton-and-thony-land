@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { IMAGE_ASSETS, type PlaceholderSpec } from '../config/assets';
+import { IMAGE_ASSETS, type FaceSpec, type PlaceholderSpec } from '../config/assets';
 import {
   GAME_HEIGHT,
   GAME_WIDTH,
@@ -54,14 +54,59 @@ export class PreloadScene extends Phaser.Scene {
     });
   }
 
-  private generatePlaceholder(key: string, { width, height, color }: PlaceholderSpec): void {
+  private generatePlaceholder(key: string, spec: PlaceholderSpec): void {
+    const { width, height, color, face } = spec;
     const graphics = this.add.graphics();
-    graphics.fillStyle(color);
-    graphics.fillRect(0, 0, width, height);
-    graphics.lineStyle(2, 0x000000);
-    graphics.strokeRect(0, 0, width, height);
+    if (face) {
+      this.drawFace(graphics, width, color, face);
+    } else {
+      graphics.fillStyle(color);
+      graphics.fillRect(0, 0, width, height);
+      graphics.lineStyle(2, 0x000000);
+      graphics.strokeRect(0, 0, width, height);
+    }
     // Desenha os Graphics numa textura com a chave pedida e descarta o desenho.
     graphics.generateTexture(key, width, height);
     graphics.destroy();
+  }
+
+  /** Rostinho redondo usado no lugar das fotos. As medidas são proporções do tamanho. */
+  private drawFace(
+    graphics: Phaser.GameObjects.Graphics,
+    size: number,
+    color: number,
+    { expression, lookX }: FaceSpec,
+  ): void {
+    const center = size / 2;
+    const eyeY = size * 0.42;
+    const eyeOffsetX = size * 0.15;
+    const pupilShift = lookX * size * 0.06;
+
+    graphics.fillStyle(color);
+    graphics.fillCircle(center, center, center - 2);
+    graphics.lineStyle(2, 0x000000);
+    graphics.strokeCircle(center, center, center - 2);
+
+    graphics.fillStyle(0x000000);
+    graphics.fillCircle(center - eyeOffsetX + pupilShift, eyeY, size * 0.06);
+    graphics.fillCircle(center + eyeOffsetX + pupilShift, eyeY, size * 0.06);
+
+    graphics.lineStyle(3, 0x000000);
+    graphics.beginPath();
+    if (expression === 'happy') {
+      graphics.arc(center, size * 0.56, size * 0.2, 0.15 * Math.PI, 0.85 * Math.PI);
+    } else if (expression === 'sad') {
+      graphics.arc(center, size * 0.84, size * 0.18, 1.2 * Math.PI, 1.8 * Math.PI);
+    } else {
+      graphics.moveTo(center - size * 0.12, size * 0.7);
+      graphics.lineTo(center + size * 0.12, size * 0.7);
+    }
+    graphics.strokePath();
+
+    if (expression === 'sad') {
+      // Lágrima embaixo do olho.
+      graphics.fillStyle(0x29adff);
+      graphics.fillCircle(center + eyeOffsetX, eyeY + size * 0.14, size * 0.05);
+    }
   }
 }
