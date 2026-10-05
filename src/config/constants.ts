@@ -39,3 +39,20 @@ export const IDLE_SLIDE_MS = 1500;
 export const HAPPY_DURATION_MS = 2500;
 /** Quanto tempo a cabeça fica triste depois de levar dano (sem morrer). */
 export const SAD_DURATION_MS = 1500;
+
+/** Tempo do pisca-pisca do "toque para começar", em ms (meio ciclo). */
+export const PROMPT_BLINK_MS = 700;
+
+/** Cartões da tela de seleção de personagem. */
+export const SELECT_CARD_WIDTH = 260;
+export const SELECT_CARD_HEIGHT = 300;
+export const SELECT_CARD_GAP = 80;
+export const SELECT_HEAD_SIZE = 160;
+/** O cartão escolhido cresce um pouco para destacar. */
+export const SELECT_CARD_FOCUS_SCALE = 1.08;
+export const SELECT_CARD_TWEEN_MS = 120;
+
+/** Cores da interface. */
+export const UI_HIGHLIGHT_COLOR = 0xffec27;
+export const UI_DIM_COLOR = 0x5f6b99;
+export const UI_CARD_COLOR = 0x29366f;

@@ -35,7 +35,7 @@ export class PreloadScene extends Phaser.Scene {
       }
     }
 
-    this.scene.start(SceneKeys.Game);
+    this.scene.start(SceneKeys.Title);
   }
 
   private createProgressBar(): void {
