@@ -7,6 +7,7 @@ import {
   PRELOAD_BAR_WIDTH,
 } from '../config/constants';
 import { SceneKeys } from '../config/keys';
+import { LEVELS } from '../config/levels';
 
 /**
  * Carrega todos os assets mostrando uma barra de progresso.
@@ -25,6 +26,9 @@ export class PreloadScene extends Phaser.Scene {
     this.load.setBaseURL(import.meta.env.BASE_URL);
     for (const asset of IMAGE_ASSETS) {
       this.load.image(asset.key, asset.path);
+    }
+    for (const level of LEVELS) {
+      this.load.tilemapTiledJSON(level.key, level.path);
     }
   }
 
@@ -55,10 +59,15 @@ export class PreloadScene extends Phaser.Scene {
   }
 
   private generatePlaceholder(key: string, spec: PlaceholderSpec): void {
-    const { width, height, color, face } = spec;
+    const { width, height, color, face, tiles } = spec;
     const graphics = this.add.graphics();
     if (face) {
       this.drawFace(graphics, width, color, face);
+    } else if (tiles) {
+      tiles.forEach((tileColor, i) => {
+        graphics.fillStyle(tileColor);
+        graphics.fillRect(i * height, 0, height, height);
+      });
     } else {
       graphics.fillStyle(color);
       graphics.fillRect(0, 0, width, height);

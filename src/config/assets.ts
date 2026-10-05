@@ -23,6 +23,8 @@ export interface PlaceholderSpec {
   color: number;
   /** Se definido, desenha um rosto redondo em vez de um retângulo. */
   face?: FaceSpec;
+  /** Se definido, desenha um tileset: um quadrado de height×height por cor, lado a lado. */
+  tiles?: number[];
 }
 
 export interface ImageAsset {
@@ -44,9 +46,15 @@ const SPRITE_ASSETS: readonly ImageAsset[] = [
     placeholder: { width: 32, height: 96, color: 0x00e436 },
   },
   {
-    key: TextureKeys.Ground,
-    path: 'assets/tiles/ground.png',
-    placeholder: { width: 32, height: 32, color: 0xab5236 },
+    // Ordem dos tiles: terra, grama, bloco, espinhos (igual ao tileset.png do Tiled).
+    key: TextureKeys.Tileset,
+    path: 'assets/tiles/tileset.png',
+    placeholder: {
+      width: 128,
+      height: 32,
+      color: 0xab5236,
+      tiles: [0xab5236, 0x00e436, 0xffa300, 0xc2c3c7],
+    },
   },
 ];
 

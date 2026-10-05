@@ -9,6 +9,13 @@ export const BACKGROUND_COLOR = '#1d2b53';
 /** Gravidade da física arcade, em pixels por segundo². */
 export const GRAVITY_Y = 1200;
 
+/** Espera entre tocar a bandeira e ir para a tela de fase concluída. */
+export const LEVEL_COMPLETE_DELAY_MS = 800;
+
+/** Pulinho da cabeça na tela de fase concluída. */
+export const CELEBRATE_HOP_HEIGHT = 20;
+export const CELEBRATE_HOP_MS = 350;
+
 /** Barra de progresso da PreloadScene. */
 export const PRELOAD_BAR_WIDTH = 400;
 export const PRELOAD_BAR_HEIGHT = 24;

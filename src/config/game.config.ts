@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { BootScene } from '../scenes/BootScene';
 import { GameScene } from '../scenes/GameScene';
+import { LevelCompleteScene } from '../scenes/LevelCompleteScene';
 import { PreloadScene } from '../scenes/PreloadScene';
 import { SelectScene } from '../scenes/SelectScene';
 import { TitleScene } from '../scenes/TitleScene';
@@ -26,5 +27,5 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
     },
   },
   // A primeira cena da lista é a que inicia.
-  scene: [BootScene, PreloadScene, TitleScene, SelectScene, GameScene],
+  scene: [BootScene, PreloadScene, TitleScene, SelectScene, GameScene, LevelCompleteScene],
 };
