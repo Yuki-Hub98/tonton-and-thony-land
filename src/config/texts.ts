@@ -5,4 +5,6 @@ export const TEXTS = {
   pressStart: 'Toque na tela ou aperte Espaço',
   chooseCharacter: 'Quem vai jogar?',
   selectHint: '← → para escolher  •  Espaço para começar',
+  levelComplete: (levelName: string) => `${levelName} concluída!`,
+  pressContinue: 'Toque na tela ou aperte Espaço para continuar',
 } as const;

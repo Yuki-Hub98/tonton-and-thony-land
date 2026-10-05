@@ -6,12 +6,13 @@ export const SceneKeys = {
   Title: 'title',
   Select: 'select',
   Game: 'game',
+  LevelComplete: 'level-complete',
 } as const;
 
 export const TextureKeys = {
   Body: 'body',
   Flag: 'flag',
-  Ground: 'ground',
+  Tileset: 'tileset',
 } as const;
 
 export type TextureKey = (typeof TextureKeys)[keyof typeof TextureKeys];
