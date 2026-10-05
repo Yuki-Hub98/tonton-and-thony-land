@@ -11,6 +11,8 @@ export class HeadController {
     private readonly head: Phaser.GameObjects.Image,
     private readonly poses: HeadPoses,
     startTime: number,
+    /** Tamanho da cabeça na tela (na fase é HEAD_SIZE; na seleção é maior). */
+    private readonly displaySize: number = HEAD_SIZE,
   ) {
     this.mood = new HeadMood(
       {
@@ -34,8 +36,8 @@ export class HeadController {
     const texture = resolveHeadTexture(this.mood.current(now), this.poses);
     if (texture === this.currentTexture) return;
 
-    // Fotos e placeholders podem ter tamanhos diferentes; a cabeça sempre aparece com HEAD_SIZE.
-    this.head.setTexture(texture).setDisplaySize(HEAD_SIZE, HEAD_SIZE);
+    // Fotos e placeholders podem ter tamanhos diferentes; a cabeça sempre aparece com displaySize.
+    this.head.setTexture(texture).setDisplaySize(this.displaySize, this.displaySize);
     this.currentTexture = texture;
   }
 }

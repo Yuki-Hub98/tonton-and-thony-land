@@ -8,9 +8,12 @@ const KEY_BINDINGS: Record<Action, number[]> = {
   left: [KeyCodes.LEFT, KeyCodes.A],
   right: [KeyCodes.RIGHT, KeyCodes.D],
   jump: [KeyCodes.SPACE, KeyCodes.UP, KeyCodes.W],
+  confirm: [KeyCodes.ENTER, KeyCodes.SPACE],
 };
 
-/** Traduz teclas em ações (left, right, jump). As entidades só falam com esta classe. */
+const ACTIONS = Object.keys(KEY_BINDINGS) as Action[];
+
+/** Traduz teclas em ações. As entidades e menus só falam com esta classe. */
 export class InputManager {
   private readonly keys: Record<Action, Phaser.Input.Keyboard.Key[]>;
 
@@ -18,11 +21,9 @@ export class InputManager {
     const keyboard = scene.input.keyboard;
     const bind = (codes: number[]) => (keyboard ? codes.map((code) => keyboard.addKey(code)) : []);
 
-    this.keys = {
-      left: bind(KEY_BINDINGS.left),
-      right: bind(KEY_BINDINGS.right),
-      jump: bind(KEY_BINDINGS.jump),
-    };
+    this.keys = Object.fromEntries(
+      ACTIONS.map((action) => [action, bind(KEY_BINDINGS[action])]),
+    ) as Record<Action, Phaser.Input.Keyboard.Key[]>;
   }
 
   /** A ação está apertada agora. */

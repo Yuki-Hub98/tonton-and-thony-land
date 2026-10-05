@@ -3,6 +3,8 @@
 export const SceneKeys = {
   Boot: 'boot',
   Preload: 'preload',
+  Title: 'title',
+  Select: 'select',
   Game: 'game',
 } as const;
 
