@@ -25,4 +25,9 @@ export const IMAGE_ASSETS: readonly ImageAsset[] = [
     path: 'assets/sprites/flag.png',
     placeholder: { width: 32, height: 96, color: 0x00e436 },
   },
+  {
+    key: TextureKeys.Ground,
+    path: 'assets/tiles/ground.png',
+    placeholder: { width: 32, height: 32, color: 0xab5236 },
+  },
 ];

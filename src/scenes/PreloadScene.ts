@@ -6,7 +6,7 @@ import {
   PRELOAD_BAR_HEIGHT,
   PRELOAD_BAR_WIDTH,
 } from '../config/constants';
-import { SceneKeys, TextureKeys } from '../config/keys';
+import { SceneKeys } from '../config/keys';
 
 /**
  * Carrega todos os assets mostrando uma barra de progresso.
@@ -35,7 +35,7 @@ export class PreloadScene extends Phaser.Scene {
       }
     }
 
-    this.showSetupCheck();
+    this.scene.start(SceneKeys.Game);
   }
 
   private createProgressBar(): void {
@@ -63,29 +63,5 @@ export class PreloadScene extends Phaser.Scene {
     // Desenha os Graphics numa textura com a chave pedida e descarta o desenho.
     graphics.generateTexture(key, width, height);
     graphics.destroy();
-  }
-
-  /** Tela provisória da Etapa 0: confirma que o Phaser, o carregamento e os placeholders funcionam. */
-  private showSetupCheck(): void {
-    this.children.removeAll(true);
-
-    const centerX = GAME_WIDTH / 2;
-    this.add
-      .text(centerX, 160, 'Tonton and Thony Land', {
-        fontFamily: 'sans-serif',
-        fontSize: '48px',
-        color: '#ffffff',
-      })
-      .setOrigin(0.5);
-    this.add
-      .text(centerX, 230, 'Funcionou! 🎉', {
-        fontFamily: 'sans-serif',
-        fontSize: '32px',
-        color: '#ffec27',
-      })
-      .setOrigin(0.5);
-
-    this.add.image(centerX - 40, 360, TextureKeys.Body);
-    this.add.image(centerX + 40, 360, TextureKeys.Flag);
   }
 }
