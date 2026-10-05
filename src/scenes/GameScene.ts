@@ -1,4 +1,10 @@
 import Phaser from 'phaser';
+import {
+  CHARACTERS,
+  DEFAULT_CHARACTER_ID,
+  type CharacterDef,
+  type CharacterId,
+} from '../config/characters';
 import { CAMERA_LEAD_RATIO, TILE_SIZE } from '../config/constants';
 import { SceneKeys, TextureKeys } from '../config/keys';
 import { TEST_LEVEL } from '../config/testLevel';
@@ -6,14 +12,24 @@ import { Player } from '../entities/Player';
 import { CameraController } from '../systems/CameraController';
 import { InputManager } from '../systems/InputManager';
 
-/** A fase em si. Na Etapa 1 monta a fase de teste desenhada em código. */
+export interface GameSceneData {
+  characterId?: CharacterId;
+}
+
+/** A fase em si. Por enquanto monta a fase de teste desenhada em código. */
 export class GameScene extends Phaser.Scene {
+  private character!: CharacterDef;
   private player!: Player;
   private inputManager!: InputManager;
   private cameraController!: CameraController;
 
   constructor() {
     super(SceneKeys.Game);
+  }
+
+  /** Recebe os dados passados em scene.start(). A seleção de personagem chega na Etapa 3. */
+  init(data: GameSceneData): void {
+    this.character = CHARACTERS[data.characterId ?? DEFAULT_CHARACTER_ID];
   }
 
   create(): void {
@@ -27,6 +43,7 @@ export class GameScene extends Phaser.Scene {
       this,
       (TEST_LEVEL.spawn.x + 0.5) * TILE_SIZE,
       TEST_LEVEL.spawn.y * TILE_SIZE,
+      this.character,
     );
     this.physics.add.collider(this.player, platforms);
 
@@ -35,8 +52,9 @@ export class GameScene extends Phaser.Scene {
   }
 
   /** Roda a cada frame (o "game loop"). */
-  update(): void {
+  update(time: number): void {
     this.player.updateMovement(this.inputManager);
+    this.player.updateHead(time);
     this.cameraController.update(this.player);
   }
 
