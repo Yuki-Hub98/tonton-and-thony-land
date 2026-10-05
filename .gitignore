@@ -1,0 +1,35 @@
+# Dependências (recriadas com `npm install` / `npm ci`)
+node_modules/
+
+# Build de produção (gerado por `npm run build`; o deploy gera de novo no CI)
+dist/
+dist-ssr/
+
+# Cache e relatórios de ferramentas
+.vite/
+coverage/
+*.tsbuildinfo
+.eslintcache
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Variáveis de ambiente locais
+.env
+.env.*
+!.env.example
+
+# Editores e IDEs
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.swp
+*~
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
