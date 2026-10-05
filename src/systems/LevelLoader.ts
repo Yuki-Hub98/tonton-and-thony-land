@@ -8,6 +8,8 @@ export interface LoadedLevel {
   data: LevelData;
   /** Camada de chão, já com colisão nos tiles marcados com collides: true. */
   ground: Phaser.Tilemaps.TilemapLayer;
+  /** Camada de perigos (espinhos), se a fase tiver. */
+  hazards?: Phaser.Tilemaps.TilemapLayer;
 }
 
 /** Monta na cena a fase desenhada no Tiled (o JSON já foi carregado pela PreloadScene). */
@@ -28,6 +30,12 @@ export class LevelLoader {
     if (!ground) throw new Error(`Não consegui criar a camada "${LEVEL_LAYERS.ground}".`);
     ground.setCollisionByProperty({ [COLLIDES_PROPERTY]: true });
 
-    return { data, ground };
+    // A camada hazards é opcional: só cria se existir, para o Phaser não reclamar no console.
+    const hazards =
+      map.getLayer(LEVEL_LAYERS.hazards) === null
+        ? undefined
+        : (map.createLayer(LEVEL_LAYERS.hazards, tileset) ?? undefined);
+
+    return { data, ground, hazards };
   }
 }

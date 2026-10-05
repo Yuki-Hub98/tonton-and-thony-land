@@ -30,6 +30,38 @@ export const PLAYER_JUMP_VELOCITY = -620;
 /** Ao soltar o pulo ainda subindo, a velocidade é multiplicada por isto (pulo baixo). */
 export const JUMP_CUT_FACTOR = 0.45;
 
+/** Vidas no começo do jogo. Elas passam de uma fase para a outra. */
+export const STARTING_LIVES = 3;
+/** Invencibilidade depois de voltar à fase (o jogador fica piscando). */
+export const INVINCIBLE_MS = 2000;
+/** Velocidade do pisca-pisca da invencibilidade (meio ciclo). */
+export const BLINK_MS = 100;
+/** Tempo entre morrer e voltar à fase (ou ir para o game over). */
+export const DEATH_DELAY_MS = 1500;
+/** Pulinho da morte, antes de cair para fora da tela. */
+export const DEATH_JUMP_VELOCITY = -450;
+
+/** Velocidade do inimigo que anda. */
+export const ENEMY_SPEED = 60;
+/** Pulinho do jogador ao pisar num inimigo. */
+export const STOMP_BOUNCE_VELOCITY = -380;
+/** Folga (px) para contar como pisão: pés um pouco abaixo do topo do inimigo ainda valem. */
+export const STOMP_TOLERANCE = 10;
+/** Tempo do inimigo amassado antes de sumir. */
+export const ENEMY_SQUASH_MS = 250;
+/** Os espinhos machucam só a parte de dentro do tile: raspar na beirada não conta. */
+export const HAZARD_INSET = 6;
+
+/** HUD: ícones de vida no canto da tela. */
+export const HUD_MARGIN = 16;
+export const HUD_LIFE_ICON_SIZE = 36;
+export const HUD_LIFE_ICON_GAP = 6;
+
+/** Botões da tela de game over. */
+export const MENU_BUTTON_WIDTH = 320;
+export const MENU_BUTTON_HEIGHT = 72;
+export const MENU_BUTTON_GAP = 40;
+
 /** Posição do jogador na tela quando a câmera anda: 0 = borda esquerda, 1 = direita. */
 export const CAMERA_LEAD_RATIO = 0.4;
 

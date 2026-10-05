@@ -9,6 +9,20 @@ export class CameraController {
     private readonly leadRatio: number,
   ) {}
 
+  /**
+   * Reposiciona a câmera para mostrar o ponto x (ex.: respawn no início ou no checkpoint).
+   * É o único momento em que a câmera pode voltar para trás.
+   */
+  snapTo(x: number): void {
+    this.camera.scrollX = nextCameraScrollX({
+      currentScrollX: 0,
+      targetX: x,
+      viewportWidth: this.camera.width,
+      worldWidth: this.worldWidth,
+      leadRatio: this.leadRatio,
+    });
+  }
+
   /** Chamar a cada frame, depois de o jogador se mover. */
   update(player: Phaser.Physics.Arcade.Sprite): void {
     this.camera.scrollX = nextCameraScrollX({

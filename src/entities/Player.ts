@@ -1,14 +1,17 @@
 import Phaser from 'phaser';
 import type { CharacterDef } from '../config/characters';
 import {
+  DEATH_JUMP_VELOCITY,
   HEAD_OVERLAP_Y,
   JUMP_CUT_FACTOR,
   PLAYER_JUMP_VELOCITY,
   PLAYER_SPEED,
+  STOMP_BOUNCE_VELOCITY,
 } from '../config/constants';
 import { TextureKeys } from '../config/keys';
 import { HeadController } from '../components/HeadController';
 import { canJump, cutJumpVelocity, horizontalVelocity } from '../logic/movement';
+import type { Point } from '../logic/respawnPoint';
 import type { InputManager } from '../systems/InputManager';
 
 /**
@@ -68,8 +71,39 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.headController.update(time);
   }
 
+  /** Pulinho depois de pisar num inimigo. */
+  bounce(): void {
+    this.setVelocityY(STOMP_BOUNCE_VELOCITY);
+  }
+
+  /** Visível ou apagado (pisca-pisca da invencibilidade). A cabeça copia no syncHead. */
+  setBlinkVisible(visible: boolean): void {
+    this.setAlpha(visible ? 1 : 0.25);
+  }
+
+  /**
+   * Morte estilo Mario: cara triste, pulinho e cai atravessando o chão.
+   * Se caiu no buraco, só continua caindo.
+   */
+  die(fell: boolean, now: number): void {
+    this.headController.notify('died', now);
+    this.setAlpha(1);
+    // Sem colisão: atravessa o chão e não encosta mais em inimigos nem na bandeira.
+    this.body.checkCollision.none = true;
+    this.setVelocityX(0);
+    if (!fell) this.setVelocityY(DEATH_JUMP_VELOCITY);
+  }
+
+  /** Volta à fase em pé no ponto indicado (início ou checkpoint). */
+  respawnAt(point: Point, now: number): void {
+    this.body.checkCollision.none = false;
+    this.body.reset(point.x, point.y);
+    this.headController.notify('respawned', now);
+  }
+
   private syncHead(): void {
     this.head.setPosition(this.x, this.y - this.displayHeight + HEAD_OVERLAP_Y);
     this.head.setFlipX(this.flipX);
+    this.head.setAlpha(this.alpha);
   }
 }

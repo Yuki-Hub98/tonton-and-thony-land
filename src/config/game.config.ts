@@ -1,6 +1,8 @@
 import Phaser from 'phaser';
 import { BootScene } from '../scenes/BootScene';
+import { GameOverScene } from '../scenes/GameOverScene';
 import { GameScene } from '../scenes/GameScene';
+import { HUDScene } from '../scenes/HUDScene';
 import { LevelCompleteScene } from '../scenes/LevelCompleteScene';
 import { PreloadScene } from '../scenes/PreloadScene';
 import { SelectScene } from '../scenes/SelectScene';
@@ -26,6 +28,16 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
       debug: false,
     },
   },
-  // A primeira cena da lista é a que inicia.
-  scene: [BootScene, PreloadScene, TitleScene, SelectScene, GameScene, LevelCompleteScene],
+  // A primeira cena da lista é a que inicia. A ordem também é a de desenho:
+  // HUDScene vem depois da GameScene para aparecer por cima dela.
+  scene: [
+    BootScene,
+    PreloadScene,
+    TitleScene,
+    SelectScene,
+    GameScene,
+    HUDScene,
+    LevelCompleteScene,
+    GameOverScene,
+  ],
 };

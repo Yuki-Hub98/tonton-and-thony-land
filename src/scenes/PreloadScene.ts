@@ -101,10 +101,27 @@ export class PreloadScene extends Phaser.Scene {
     graphics.fillCircle(center + eyeOffsetX + pupilShift, eyeY, size * 0.06);
 
     graphics.lineStyle(3, 0x000000);
+    if (expression === 'grumpy') {
+      // Sobrancelhas inclinadas para o meio: cara de bravo.
+      const browY = eyeY - size * 0.14;
+      graphics.lineBetween(
+        center - eyeOffsetX * 1.8,
+        browY - size * 0.06,
+        center - size * 0.04,
+        browY + size * 0.04,
+      );
+      graphics.lineBetween(
+        center + eyeOffsetX * 1.8,
+        browY - size * 0.06,
+        center + size * 0.04,
+        browY + size * 0.04,
+      );
+    }
+
     graphics.beginPath();
     if (expression === 'happy') {
       graphics.arc(center, size * 0.56, size * 0.2, 0.15 * Math.PI, 0.85 * Math.PI);
-    } else if (expression === 'sad') {
+    } else if (expression === 'sad' || expression === 'grumpy') {
       graphics.arc(center, size * 0.84, size * 0.18, 1.2 * Math.PI, 1.8 * Math.PI);
     } else {
       graphics.moveTo(center - size * 0.12, size * 0.7);

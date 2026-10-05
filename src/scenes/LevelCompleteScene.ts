@@ -19,6 +19,8 @@ import type { GameSceneData } from './GameScene';
 export interface LevelCompleteData {
   characterId: CharacterId;
   levelIndex: number;
+  /** Vidas que sobraram: passam para a próxima fase. */
+  lives: number;
 }
 
 /** "Fase concluída!" com a cabeça feliz do personagem; continuar leva à próxima fase. */
@@ -78,7 +80,11 @@ export class LevelCompleteScene extends Phaser.Scene {
       this.scene.start(SceneKeys.Title);
       return;
     }
-    const data: GameSceneData = { characterId: this.completed.characterId, levelIndex: next };
+    const data: GameSceneData = {
+      characterId: this.completed.characterId,
+      levelIndex: next,
+      lives: this.completed.lives,
+    };
     this.scene.start(SceneKeys.Game, data);
   }
 }
