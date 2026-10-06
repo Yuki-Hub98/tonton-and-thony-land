@@ -11,4 +11,5 @@ export const TEXTS = {
   tryAgain: 'Tentar de novo',
   changeCharacter: 'Trocar personagem',
   menuHint: '← → para escolher  •  Espaço para confirmar',
+  rotateDevice: 'Gire o celular para jogar',
 } as const;

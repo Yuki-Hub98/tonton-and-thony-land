@@ -6,6 +6,7 @@ import {
   TITLE_PROMPT_Y_RATIO_WITH_ART,
 } from '../config/constants';
 import { RegistryKeys, SceneKeys, TextureKeys } from '../config/keys';
+import { enterFullscreenOnTouch } from '../config/screen';
 import { TextStyles } from '../config/textStyles';
 import { TEXTS } from '../config/texts';
 import { coverScale } from '../logic/coverScale';
@@ -49,7 +50,11 @@ export class TitleScene extends Phaser.Scene {
     });
 
     this.inputManager = new InputManager(this);
-    this.input.once(Phaser.Input.Events.POINTER_DOWN, () => this.goToSelect());
+    // POINTER_UP (e não DOWN): o navegador só libera a tela cheia ao terminar o toque.
+    this.input.once(Phaser.Input.Events.POINTER_UP, () => {
+      enterFullscreenOnTouch(this);
+      this.goToSelect();
+    });
   }
 
   update(): void {

@@ -33,6 +33,7 @@ import { hasFallenOut, isStomp, overlapsWithInset } from '../logic/collisionRule
 import { LivesCounter } from '../logic/LivesCounter';
 import { bottomCenter, LevelSchemaError, type LevelData } from '../logic/levelSchema';
 import { PlayerStateMachine } from '../logic/PlayerStateMachine';
+import { VirtualButtons } from '../logic/VirtualButtons';
 import { furthestRespawnPoint, type Point } from '../logic/respawnPoint';
 import { CameraController } from '../systems/CameraController';
 import { InputManager } from '../systems/InputManager';
@@ -145,7 +146,9 @@ export class GameScene extends Phaser.Scene {
       );
     }
 
-    this.inputManager = new InputManager(this);
+    // Botões de toque: a HUD desenha e aperta, o InputManager desta cena lê.
+    const touch = new VirtualButtons();
+    this.inputManager = new InputManager(this, touch);
     this.cameraController = new CameraController(
       this.cameras.main,
       level.widthPx,
@@ -153,7 +156,7 @@ export class GameScene extends Phaser.Scene {
     );
 
     // O HUD é outra cena rodando por cima desta; fecha junto quando a fase acaba.
-    const hudData: HUDData = { characterId: this.character.id, lives: this.lives.lives };
+    const hudData: HUDData = { characterId: this.character.id, lives: this.lives.lives, touch };
     this.scene.launch(SceneKeys.HUD, hudData);
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.scene.stop(SceneKeys.HUD));
   }

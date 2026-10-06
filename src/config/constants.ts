@@ -93,6 +93,17 @@ export const HUD_LIFE_ICON_GAP = 6;
 /** HUD: altura do ícone do equipamento, no canto superior direito. */
 export const HUD_EQUIPMENT_ICON_HEIGHT = 40;
 
+/** Botões de toque (só em aparelho com toque): tamanho, distância da borda e entre eles. */
+export const TOUCH_BUTTON_SIZE = 96;
+export const TOUCH_BUTTON_MARGIN = 24;
+export const TOUCH_BUTTON_GAP = 20;
+/** Transparência: solto, apertado e o "bater" antes de pegar o equipamento. */
+export const TOUCH_BUTTON_ALPHA = 0.35;
+export const TOUCH_BUTTON_PRESSED_ALPHA = 0.7;
+export const TOUCH_BUTTON_DISABLED_ALPHA = 0.12;
+/** Dedos ao mesmo tempo (ex.: segurar "direita" e tocar "pular"). */
+export const TOUCH_MAX_POINTERS = 3;
+
 /** Botões da tela de game over. */
 export const MENU_BUTTON_WIDTH = 320;
 export const MENU_BUTTON_HEIGHT = 72;
