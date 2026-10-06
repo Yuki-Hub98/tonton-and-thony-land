@@ -34,7 +34,7 @@ describe('IMAGE_ASSETS', () => {
 
   it.each(CHARACTER_IDS)('carrega o corpo animado de %s como spritesheet', (id) => {
     const asset = IMAGE_ASSETS.find((a) => a.key === CHARACTERS[id].body.texture);
-    expect(asset?.path).toBe(`assets/sprites/body-${id}-sheet.png`);
+    expect(asset?.path).toBe(`assets/characters/${id}/body-${id}-3q-sheet.png`);
     expect(asset?.frames).toEqual({
       frameWidth: BODY_FRAME_WIDTH,
       frameHeight: BODY_FRAME_HEIGHT,

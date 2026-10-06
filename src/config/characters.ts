@@ -91,6 +91,7 @@ export function bodyTextureKey(id: CharacterId): string {
   return `body-${id}`;
 }
 
+/** Spritesheet do corpo, na pasta do personagem ("3q" = pose três-quartos, meio de lado). */
 export function bodyAssetPath(id: CharacterId): string {
-  return `assets/sprites/body-${id}-sheet.png`;
+  return `assets/characters/${id}/body-${id}-3q-sheet.png`;
 }
