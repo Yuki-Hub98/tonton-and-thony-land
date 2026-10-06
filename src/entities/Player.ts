@@ -1,6 +1,9 @@
 import Phaser from 'phaser';
 import type { CharacterDef } from '../config/characters';
 import {
+  CAR_HEAD_OFFSET_X,
+  CAR_HEAD_OVERLAP_Y,
+  CAR_SPEED,
   DEATH_JUMP_VELOCITY,
   HAND_HEIGHT_RATIO,
   HAND_ITEM_HEIGHT,
@@ -15,6 +18,7 @@ import {
 } from '../config/constants';
 import { TextureKeys } from '../config/keys';
 import { HeadController } from '../components/HeadController';
+import { shouldAutoJump } from '../logic/autoDrive';
 import type { Direction } from '../logic/enemyPatrol';
 import { canJump, cutJumpVelocity, horizontalVelocity } from '../logic/movement';
 import type { Point } from '../logic/respawnPoint';
@@ -29,6 +33,7 @@ interface HandItem {
 /**
  * Jogador: o sprite do corpo tem a física (o hitbox é só o corpo).
  * A cabeça e os itens na mão são imagens separadas que seguem o corpo a cada frame.
+ * Ao pegar o carro, o mesmo sprite troca de textura e vira o carrinho, com a cabeça dentro.
  */
 export class Player extends Phaser.Physics.Arcade.Sprite {
   declare body: Phaser.Physics.Arcade.Body;
@@ -37,6 +42,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   private readonly headController: HeadController;
   private readonly handItems: HandItem[];
   private swinging = false;
+  private inCar = false;
 
   constructor(scene: Phaser.Scene, x: number, y: number, character: CharacterDef) {
     super(scene, x, y, TextureKeys.Body);
@@ -126,6 +132,34 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     });
   }
 
+  /** Pegou o carro: o corpo vira carrinho, os itens somem e a cabeça fica feliz. */
+  becomeCar(now: number): void {
+    this.inCar = true;
+    this.setItemsVisible(false);
+    this.setAlpha(1);
+    this.setFlipX(false);
+    this.setTexture(TextureKeys.Car);
+    // Sem argumentos, o hitbox passa a ter o tamanho da nova textura (o carro é mais largo e baixo).
+    this.body.setSize();
+    this.headController.notify('pickedItem', now);
+  }
+
+  /** Ponto logo à frente do para-choque, embaixo das rodas: onde a cena procura chão. */
+  get groundProbe(): Point {
+    return { x: this.body.right + 1, y: this.body.bottom + 1 };
+  }
+
+  /** Dirige sozinho para a direita, pulando paredes e buracos. Chamado a cada frame no carro. */
+  drive(groundAhead: boolean): void {
+    this.setVelocityX(CAR_SPEED);
+    const jump = shouldAutoJump({
+      onGround: this.body.blocked.down,
+      blockedAhead: this.body.blocked.right,
+      groundAhead,
+    });
+    if (jump) this.setVelocityY(PLAYER_JUMP_VELOCITY);
+  }
+
   /** Pulinho depois de pisar num inimigo. */
   bounce(): void {
     this.setVelocityY(STOMP_BOUNCE_VELOCITY);
@@ -173,7 +207,10 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   }
 
   private syncAttachments(): void {
-    this.head.setPosition(this.x, this.y - this.displayHeight + HEAD_OVERLAP_Y);
+    // No carro, a cabeça afunda no banco do motorista, um pouco para trás.
+    const headOverlap = this.inCar ? CAR_HEAD_OVERLAP_Y : HEAD_OVERLAP_Y;
+    const headOffsetX = this.inCar ? CAR_HEAD_OFFSET_X : 0;
+    this.head.setPosition(this.x + headOffsetX, this.y - this.displayHeight + headOverlap);
     this.head.setFlipX(this.flipX);
     this.head.setAlpha(this.alpha);
 

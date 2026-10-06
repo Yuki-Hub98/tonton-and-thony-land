@@ -69,6 +69,12 @@ export const HAND_ITEM_REST_ANGLE = 25;
 export const HAND_ITEM_SWING_ANGLE = 110;
 export const HAND_ITEM_SWING_MS = 90;
 
+/** Carrinho: velocidade da direção automática até a bandeira. */
+export const CAR_SPEED = 260;
+/** Cabeça dentro do carro: quanto desce sobre ele e o deslocamento para trás (banco do motorista). */
+export const CAR_HEAD_OVERLAP_Y = 16;
+export const CAR_HEAD_OFFSET_X = -6;
+
 /** Item coletável: sobe e desce parado no lugar, e some subindo ao ser pego. */
 export const PICKUP_BOB_HEIGHT = 6;
 export const PICKUP_BOB_MS = 600;

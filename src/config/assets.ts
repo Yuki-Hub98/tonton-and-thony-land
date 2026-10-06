@@ -27,6 +27,8 @@ export interface PlaceholderSpec {
   tiles?: number[];
   /** Se definido, desenha uma ferramenta: cabo fino (color) com a ponta embaixo. */
   tool?: ToolSpec;
+  /** Se definido, desenha um carrinho visto de lado (lataria em color) com rodas desta cor. */
+  vehicle?: { wheelColor: number };
 }
 
 export interface ToolSpec {
@@ -95,6 +97,12 @@ const SPRITE_ASSETS: readonly ImageAsset[] = [
       color: 0xab5236,
       tool: { headColor: 0xc2c3c7, headHeight: 12 },
     },
+  },
+  {
+    key: TextureKeys.Car,
+    path: 'assets/sprites/car.png',
+    // Visto de lado, de frente para a direita. A cabeça do personagem aparece por cima, na parte de trás.
+    placeholder: { width: 56, height: 32, color: 0xff004d, vehicle: { wheelColor: 0x1d2b53 } },
   },
   {
     // Ordem dos tiles: terra, grama, bloco, espinhos (igual ao tileset.png do Tiled).
