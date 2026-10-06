@@ -21,9 +21,16 @@ export const TextureKeys = {
   Broom: 'broom',
   Shovel: 'shovel',
   Car: 'car',
+  TitleBackground: 'title-background',
 } as const;
 
 export type TextureKey = (typeof TextureKeys)[keyof typeof TextureKeys];
+
+/** Dados guardados no registry (this.registry), compartilhado por todas as cenas. */
+export const RegistryKeys = {
+  /** Chaves de textura que não tinham arquivo e viraram placeholder. Valor: string[]. */
+  MissingArt: 'missing-art',
+} as const;
 
 /** Eventos globais (this.game.events) usados para as cenas conversarem sem se conhecer. */
 export const EventKeys = {

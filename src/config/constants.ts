@@ -110,6 +110,10 @@ export const HAPPY_DURATION_MS = 2500;
 /** Quanto tempo a cabeça fica triste depois de levar dano (sem morrer). */
 export const SAD_DURATION_MS = 1500;
 
+/** Altura (fração da tela) do "toque para começar": no meio sem arte, embaixo com a arte. */
+export const TITLE_PROMPT_Y_RATIO = 0.68;
+export const TITLE_PROMPT_Y_RATIO_WITH_ART = 0.94;
+
 /** Tempo do pisca-pisca do "toque para começar", em ms (meio ciclo). */
 export const PROMPT_BLINK_MS = 700;
 

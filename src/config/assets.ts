@@ -39,7 +39,10 @@ export interface ToolSpec {
 
 export interface ImageAsset {
   key: string;
-  /** Caminho relativo a public/, sem barra no início, para respeitar o base do Vite. */
+  /**
+   * Caminho relativo a public/, sem barra no início, para respeitar o base do Vite.
+   * PNG para o que precisa de fundo transparente; JPG serve para fundos de tela inteira.
+   */
   path: string;
   placeholder: PlaceholderSpec;
 }
@@ -103,6 +106,12 @@ const SPRITE_ASSETS: readonly ImageAsset[] = [
     path: 'assets/sprites/car.png',
     // Visto de lado, de frente para a direita. A cabeça do personagem aparece por cima, na parte de trás.
     placeholder: { width: 56, height: 32, color: 0xff004d, vehicle: { wheelColor: 0x1d2b53 } },
+  },
+  {
+    // Tela de abertura (a arte já traz o nome do jogo). Qualquer tamanho: cobre a tela sem distorcer.
+    key: TextureKeys.TitleBackground,
+    path: 'assets/ui/title.jpg',
+    placeholder: { width: 960, height: 540, color: 0x1d2b53 },
   },
   {
     // Ordem dos tiles: terra, grama, bloco, espinhos (igual ao tileset.png do Tiled).

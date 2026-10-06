@@ -6,7 +6,7 @@ import {
   PRELOAD_BAR_HEIGHT,
   PRELOAD_BAR_WIDTH,
 } from '../config/constants';
-import { SceneKeys } from '../config/keys';
+import { RegistryKeys, SceneKeys } from '../config/keys';
 import { LEVELS } from '../config/levels';
 
 /**
@@ -33,11 +33,15 @@ export class PreloadScene extends Phaser.Scene {
   }
 
   create(): void {
+    const missingArt: string[] = [];
     for (const asset of IMAGE_ASSETS) {
       if (!this.textures.exists(asset.key)) {
         this.generatePlaceholder(asset.key, asset.placeholder);
+        missingArt.push(asset.key);
       }
     }
+    // As cenas consultam isto para saber se estão com a arte de verdade ou com o placeholder.
+    this.registry.set(RegistryKeys.MissingArt, missingArt);
 
     this.scene.start(SceneKeys.Title);
   }
