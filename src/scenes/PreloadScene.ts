@@ -1,11 +1,6 @@
 import Phaser from 'phaser';
 import { IMAGE_ASSETS, type FaceSpec, type PlaceholderSpec, type ToolSpec } from '../config/assets';
-import {
-  GAME_HEIGHT,
-  GAME_WIDTH,
-  PRELOAD_BAR_HEIGHT,
-  PRELOAD_BAR_WIDTH,
-} from '../config/constants';
+import { GAME_HEIGHT, PRELOAD_BAR_HEIGHT, PRELOAD_BAR_WIDTH } from '../config/constants';
 import { RegistryKeys, SceneKeys } from '../config/keys';
 import { LEVELS } from '../config/levels';
 
@@ -47,7 +42,7 @@ export class PreloadScene extends Phaser.Scene {
   }
 
   private createProgressBar(): void {
-    const x = (GAME_WIDTH - PRELOAD_BAR_WIDTH) / 2;
+    const x = (this.scale.width - PRELOAD_BAR_WIDTH) / 2;
     const y = (GAME_HEIGHT - PRELOAD_BAR_HEIGHT) / 2;
 
     this.add

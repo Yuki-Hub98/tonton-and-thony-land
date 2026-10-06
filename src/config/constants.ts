@@ -1,8 +1,13 @@
 // Números do jogo. Ajuste a dificuldade e o visual mexendo só aqui.
 
-/** Resolução lógica do jogo. O Phaser escala esse tamanho para caber na tela. */
-export const GAME_WIDTH = 960;
+/**
+ * Resolução lógica do jogo. A altura é fixa; a largura acompanha a proporção da tela
+ * (ver logic/screenSize.ts), entre o mínimo (tablet 4:3) e o máximo (celular bem comprido).
+ * Nas cenas, use this.scale.width para saber a largura atual.
+ */
 export const GAME_HEIGHT = 540;
+export const GAME_MIN_WIDTH = 720;
+export const GAME_MAX_WIDTH = 1280;
 
 export const BACKGROUND_COLOR = '#1d2b53';
 

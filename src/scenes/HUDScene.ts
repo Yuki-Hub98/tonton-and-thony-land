@@ -1,7 +1,6 @@
 import Phaser from 'phaser';
 import { CHARACTERS, type CharacterId } from '../config/characters';
 import {
-  GAME_WIDTH,
   HUD_EQUIPMENT_ICON_HEIGHT,
   HUD_LIFE_ICON_GAP,
   HUD_LIFE_ICON_SIZE,
@@ -62,7 +61,7 @@ export class HUDScene extends Phaser.Scene {
 
   /** Um ícone por item do equipamento, da direita para a esquerda. Começam escondidos. */
   private createEquipmentIcons(): void {
-    let right = GAME_WIDTH - HUD_MARGIN;
+    let right = this.scale.width - HUD_MARGIN;
     this.equipmentIcons = CHARACTERS[this.hud.characterId].equipment.textures.map((texture) => {
       const icon = this.add.image(right, HUD_MARGIN, texture).setOrigin(1, 0).setVisible(false);
       icon.setScale(HUD_EQUIPMENT_ICON_HEIGHT / icon.height);
