@@ -51,11 +51,36 @@ export const STOMP_TOLERANCE = 10;
 export const ENEMY_SQUASH_MS = 250;
 /** Os espinhos machucam só a parte de dentro do tile: raspar na beirada não conta. */
 export const HAZARD_INSET = 6;
+/** Inimigo derrotado pelo golpe: voa de cabeça para baixo e some. */
+export const ENEMY_KNOCKOUT_DISTANCE = 48;
+export const ENEMY_KNOCKOUT_HEIGHT = 40;
+export const ENEMY_KNOCKOUT_MS = 350;
+
+/** Golpe com o equipamento: alcance à frente do corpo (px) e espera entre um golpe e outro. */
+export const ATTACK_REACH = 40;
+export const ATTACK_COOLDOWN_MS = 300;
+
+/** Item na mão: altura na tela, altura da mão (fração do corpo, a partir dos pés) e ângulos. */
+export const HAND_ITEM_HEIGHT = 40;
+export const HAND_HEIGHT_RATIO = 0.55;
+/** Inclinação do item parado (graus): a ponta vai um pouco para a frente. */
+export const HAND_ITEM_REST_ANGLE = 25;
+/** Até onde o item gira no golpe (graus) e quanto tempo leva para ir (a volta leva o mesmo). */
+export const HAND_ITEM_SWING_ANGLE = 120;
+export const HAND_ITEM_SWING_MS = 90;
+
+/** Item coletável: sobe e desce parado no lugar, e some subindo ao ser pego. */
+export const PICKUP_BOB_HEIGHT = 6;
+export const PICKUP_BOB_MS = 600;
+export const PICKUP_COLLECT_RISE = 24;
+export const PICKUP_COLLECT_MS = 250;
 
 /** HUD: ícones de vida no canto da tela. */
 export const HUD_MARGIN = 16;
 export const HUD_LIFE_ICON_SIZE = 36;
 export const HUD_LIFE_ICON_GAP = 6;
+/** HUD: altura do ícone do equipamento, no canto superior direito. */
+export const HUD_EQUIPMENT_ICON_HEIGHT = 40;
 
 /** Botões da tela de game over. */
 export const MENU_BUTTON_WIDTH = 320;

@@ -1,5 +1,6 @@
 // Definição dos personagens. Tudo que muda entre Anthony e Antonela fica aqui,
 // para nenhuma cena precisar de if (personagem === 'anthony').
+import { TextureKeys } from './keys';
 
 export type CharacterId = 'anthony' | 'antonela';
 
@@ -12,7 +13,11 @@ export interface CharacterDef {
   displayName: string;
   /** Chaves de textura das fotos (formato `<id>-<pose>`). */
   heads: { idle: string[]; sad: string; happy: string };
-  equipment: { name: string; textures: string[] }; // texturas exibidas na mão
+  /**
+   * Equipamento da fase. A primeira textura vai na mão da frente (e aparece no item a pegar);
+   * as outras, na mão de trás.
+   */
+  equipment: { name: string; textures: string[] };
   /** Cor da cabeça desenhada enquanto as fotos não existem. */
   placeholderColor: number;
 }
@@ -26,7 +31,7 @@ export const CHARACTERS: Record<CharacterId, CharacterDef> = {
       sad: 'anthony-sad',
       happy: 'anthony-happy',
     },
-    equipment: { name: 'Vassoura e pá', textures: ['broom', 'shovel'] },
+    equipment: { name: 'Vassoura e pá', textures: [TextureKeys.Broom, TextureKeys.Shovel] },
     placeholderColor: 0xffa300,
   },
   antonela: {
@@ -37,7 +42,7 @@ export const CHARACTERS: Record<CharacterId, CharacterDef> = {
       sad: 'antonela-sad',
       happy: 'antonela-happy',
     },
-    equipment: { name: 'A definir', textures: ['equipment-placeholder'] },
+    equipment: { name: 'Vassoura', textures: [TextureKeys.Broom] },
     placeholderColor: 0xff77a8,
   },
 };
