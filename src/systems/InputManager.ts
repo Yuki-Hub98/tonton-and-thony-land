@@ -10,8 +10,7 @@ const KEY_BINDINGS: Record<Action, number[]> = {
   right: [KeyCodes.RIGHT, KeyCodes.D],
   jump: [KeyCodes.SPACE, KeyCodes.UP, KeyCodes.W],
   attack: [KeyCodes.J, KeyCodes.X],
-  // B: a arte da tela de abertura diz "Press [B] to start".
-  confirm: [KeyCodes.ENTER, KeyCodes.SPACE, KeyCodes.B],
+  confirm: [KeyCodes.ENTER, KeyCodes.SPACE],
 };
 
 const ACTIONS = Object.keys(KEY_BINDINGS) as Action[];
