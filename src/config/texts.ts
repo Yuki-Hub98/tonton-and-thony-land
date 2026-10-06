@@ -12,4 +12,9 @@ export const TEXTS = {
   changeCharacter: 'Trocar personagem',
   menuHint: '← → para escolher  •  Espaço para confirmar',
   rotateDevice: 'Gire o celular para jogar',
+  continueQuestion: 'Continuar de onde parou?',
+  continueFrom: (levelName: string) => `Continuar: ${levelName}`,
+  startOver: 'Começar do início',
+  victory: 'Você venceu!',
+  playAgain: 'Toque ou aperte Espaço para jogar de novo',
 } as const;

@@ -93,6 +93,13 @@ export const HUD_LIFE_ICON_GAP = 6;
 /** HUD: altura do ícone do equipamento, no canto superior direito. */
 export const HUD_EQUIPMENT_ICON_HEIGHT = 40;
 
+/** Tela de vitória: cabeça grande e chuva de confete. */
+export const VICTORY_HEAD_SIZE = 200;
+export const CONFETTI_COUNT = 60;
+export const CONFETTI_SIZE = 12;
+export const CONFETTI_FALL_MS = 2500;
+export const CONFETTI_COLORS = [0xff004d, 0xffa300, 0xffec27, 0x00e436, 0x29adff, 0xff77a8];
+
 /** Botões de toque (só em aparelho com toque): tamanho, distância da borda e entre eles. */
 export const TOUCH_BUTTON_SIZE = 96;
 export const TOUCH_BUTTON_MARGIN = 24;

@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { BootScene } from '../scenes/BootScene';
+import { ContinueScene } from '../scenes/ContinueScene';
 import { GameOverScene } from '../scenes/GameOverScene';
 import { GameScene } from '../scenes/GameScene';
 import { HUDScene } from '../scenes/HUDScene';
@@ -7,6 +8,7 @@ import { LevelCompleteScene } from '../scenes/LevelCompleteScene';
 import { PreloadScene } from '../scenes/PreloadScene';
 import { SelectScene } from '../scenes/SelectScene';
 import { TitleScene } from '../scenes/TitleScene';
+import { VictoryScene } from '../scenes/VictoryScene';
 import { BACKGROUND_COLOR, GAME_HEIGHT, GRAVITY_Y, TOUCH_MAX_POINTERS } from './constants';
 import { currentGameWidth } from './screen';
 
@@ -39,9 +41,11 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
     PreloadScene,
     TitleScene,
     SelectScene,
+    ContinueScene,
     GameScene,
     HUDScene,
     LevelCompleteScene,
     GameOverScene,
+    VictoryScene,
   ],
 };
