@@ -65,6 +65,18 @@ export const ENEMY_KNOCKOUT_MS = 350;
 export const ATTACK_REACH = 40;
 export const ATTACK_COOLDOWN_MS = 300;
 
+/**
+ * Corpo e carro são desenhados em 4× (quadro de 176×160, carro de 224×128) para ficarem
+ * nítidos no celular; na fase aparecem em 1/4 (corpo 44×40, carro 56×32).
+ */
+export const BODY_SCALE = 0.25;
+/** Hitbox do corpo na tela: só o tronco e as pernas, sem os braços abertos. */
+export const BODY_HITBOX_WIDTH = 28;
+export const BODY_HITBOX_HEIGHT = 40;
+/** Velocidade da caminhada (quadros por segundo) e abaixo de que velocidade conta como parado. */
+export const BODY_WALK_FPS = 11;
+export const BODY_WALK_MIN_SPEED = 5;
+
 /** Item na mão: altura na tela, altura da mão (fração do corpo, a partir dos pés) e ângulos. */
 export const HAND_ITEM_HEIGHT = 40;
 export const HAND_HEIGHT_RATIO = 0.55;
@@ -76,9 +88,12 @@ export const HAND_ITEM_SWING_MS = 90;
 
 /** Carrinho: velocidade da direção automática até a bandeira. */
 export const CAR_SPEED = 260;
-/** Cabeça dentro do carro: quanto desce sobre ele e o deslocamento para trás (banco do motorista). */
-export const CAR_HEAD_OVERLAP_Y = 16;
-export const CAR_HEAD_OFFSET_X = -6;
+/**
+ * Onde fica a base da cabeça dentro do carro, em pixels da imagem car.png (224×128):
+ * no banco do motorista, atrás do para-brisa.
+ */
+export const CAR_HEAD_ANCHOR_X = 85;
+export const CAR_HEAD_ANCHOR_Y = 60;
 
 /** Item coletável: sobe e desce parado no lugar, e some subindo ao ser pego. */
 export const PICKUP_BOB_HEIGHT = 6;
