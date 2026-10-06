@@ -22,6 +22,7 @@ import { EventKeys, SceneKeys } from '../config/keys';
 import { LEVELS } from '../config/levels';
 import { TextStyles } from '../config/textStyles';
 import { Checkpoint } from '../entities/Checkpoint';
+import { CarPickup } from '../entities/CarPickup';
 import { Enemy } from '../entities/Enemy';
 import { EquipmentPickup } from '../entities/EquipmentPickup';
 import { Flag } from '../entities/Flag';
@@ -57,6 +58,7 @@ export class GameScene extends Phaser.Scene {
   private ground!: Phaser.Tilemaps.TilemapLayer;
   private enemies!: Phaser.Physics.Arcade.Group;
   private equipmentPickups!: Phaser.Physics.Arcade.StaticGroup;
+  private carPickups!: Phaser.Physics.Arcade.StaticGroup;
   private inputManager!: InputManager;
   private cameraController!: CameraController;
   private state!: PlayerStateMachine;
@@ -121,11 +123,15 @@ export class GameScene extends Phaser.Scene {
       this.touchEnemy(enemy as Enemy),
     );
 
-    // Os equipamentos também voltam a cada respawn, para dar para pegar de novo.
+    // Os itens também voltam a cada respawn, para dar para pegar de novo.
     this.equipmentPickups = this.physics.add.staticGroup();
-    this.spawnEquipment();
+    this.carPickups = this.physics.add.staticGroup();
+    this.spawnPickups();
     this.physics.add.overlap(player, this.equipmentPickups, (_player, pickup) =>
       this.pickUpEquipment(pickup as EquipmentPickup),
+    );
+    this.physics.add.overlap(player, this.carPickups, (_player, pickup) =>
+      this.pickUpCar(pickup as CarPickup),
     );
 
     if (hazards) {
@@ -159,6 +165,13 @@ export class GameScene extends Phaser.Scene {
     player.updateHead(time);
     if (!this.state.isInPlay) return;
 
+    if (this.state.isAutoDriving) {
+      // No carro o input fica desligado: ele vai sozinho até a bandeira.
+      player.drive(this.isSolidAt(player.groundProbe));
+      this.cameraController.update(player);
+      return;
+    }
+
     player.updateMovement(this.inputManager);
     if (this.inputManager.justPressed('attack')) this.attack(time);
     this.cameraController.update(player);
@@ -176,12 +189,22 @@ export class GameScene extends Phaser.Scene {
     }
   }
 
-  /** Cria os equipamentos nos pontos do Tiled (de novo a cada respawn). */
-  private spawnEquipment(): void {
+  /** Cria os itens (equipamento e carro) nos pontos do Tiled (de novo a cada respawn). */
+  private spawnPickups(): void {
     this.equipmentPickups.clear(true, true);
-    for (const object of this.level.objects.filter((o) => o.type === 'equipment')) {
-      this.equipmentPickups.add(new EquipmentPickup(this, object, this.character));
+    this.carPickups.clear(true, true);
+    for (const object of this.level.objects) {
+      if (object.type === 'equipment') {
+        this.equipmentPickups.add(new EquipmentPickup(this, object, this.character));
+      } else if (object.type === 'car') {
+        this.carPickups.add(new CarPickup(this, object));
+      }
     }
+  }
+
+  /** O tile neste ponto do mundo é chão sólido. */
+  private isSolidAt({ x, y }: Point): boolean {
+    return this.ground.getTileAtWorldXY(x, y)?.collides ?? false;
   }
 
   private pickUpEquipment(pickup: EquipmentPickup): void {
@@ -194,6 +217,20 @@ export class GameScene extends Phaser.Scene {
     pickup.collect();
     player.equip(this.time.now);
     this.game.events.emit(EventKeys.PlayerEquipped, true);
+  }
+
+  /** Pegou o carro (com ou sem equipamento): vira carrinho e vai sozinho até a bandeira. */
+  private pickUpCar(pickup: CarPickup): void {
+    const player = this.player;
+    if (!player || pickup.isCollected) return;
+    const wasArmed = this.state.state === 'armed';
+    if (this.state.send('pickupCar', this.time.now) !== 'car') return;
+
+    pickup.collect();
+    player.becomeCar(this.time.now);
+    if (wasArmed) this.game.events.emit(EventKeys.PlayerEquipped, false);
+    // Fecha a borda de baixo do mundo: no buraco o carro roda no fundo e pula para sair, sem cair.
+    this.physics.world.checkCollision.down = true;
   }
 
   /** Botão bater: só com equipamento, e respeitando a espera entre golpes. */
@@ -216,6 +253,12 @@ export class GameScene extends Phaser.Scene {
   private touchEnemy(enemy: Enemy): void {
     const body = this.player?.body;
     if (!body || !this.state.isInPlay) return;
+
+    // O carro passa por cima de tudo: inimigo que encosta é derrotado.
+    if (this.state.isAutoDriving) {
+      enemy.knockOut(1);
+      return;
+    }
 
     const stomped = isStomp({
       playerVelocityY: body.velocity.y,
@@ -285,7 +328,7 @@ export class GameScene extends Phaser.Scene {
     this.player?.respawnAt(this.respawnPoint, now);
     this.cameraController.snapTo(this.respawnPoint.x);
     this.spawnEnemies();
-    this.spawnEquipment();
+    this.spawnPickups();
   }
 
   private completeLevel(): void {

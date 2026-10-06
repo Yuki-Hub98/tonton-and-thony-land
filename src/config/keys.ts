@@ -20,6 +20,7 @@ export const TextureKeys = {
   CheckpointActive: 'checkpoint-active',
   Broom: 'broom',
   Shovel: 'shovel',
+  Car: 'car',
 } as const;
 
 export type TextureKey = (typeof TextureKeys)[keyof typeof TextureKeys];

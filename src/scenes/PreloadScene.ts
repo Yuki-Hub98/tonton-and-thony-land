@@ -59,12 +59,14 @@ export class PreloadScene extends Phaser.Scene {
   }
 
   private generatePlaceholder(key: string, spec: PlaceholderSpec): void {
-    const { width, height, color, face, tiles, tool } = spec;
+    const { width, height, color, face, tiles, tool, vehicle } = spec;
     const graphics = this.add.graphics();
     if (face) {
       this.drawFace(graphics, width, color, face);
     } else if (tool) {
       this.drawTool(graphics, width, height, color, tool);
+    } else if (vehicle) {
+      this.drawVehicle(graphics, width, height, color, vehicle.wheelColor);
     } else if (tiles) {
       tiles.forEach((tileColor, i) => {
         graphics.fillStyle(tileColor);
@@ -98,6 +100,33 @@ export class PreloadScene extends Phaser.Scene {
     graphics.fillRect(0, handleHeight, width, headHeight);
     graphics.lineStyle(1, 0x000000);
     graphics.strokeRect(0, handleHeight, width, headHeight);
+  }
+
+  /** Carrinho de lado: lataria arredondada embaixo, para-brisa na frente e duas rodas. */
+  private drawVehicle(
+    graphics: Phaser.GameObjects.Graphics,
+    width: number,
+    height: number,
+    bodyColor: number,
+    wheelColor: number,
+  ): void {
+    const wheelRadius = height * 0.2;
+    const bodyTop = height * 0.4;
+    const bodyHeight = height - bodyTop - wheelRadius;
+
+    graphics.fillStyle(bodyColor);
+    graphics.fillRoundedRect(0, bodyTop, width, bodyHeight, 6);
+    graphics.lineStyle(2, 0x000000);
+    graphics.strokeRoundedRect(0, bodyTop, width, bodyHeight, 6);
+
+    // Para-brisa na frente (lado direito), um pouco acima da lataria.
+    graphics.fillStyle(0x29adff);
+    graphics.fillRect(width * 0.62, height * 0.12, width * 0.08, bodyTop - height * 0.12);
+
+    graphics.fillStyle(wheelColor);
+    for (const wheelX of [width * 0.22, width * 0.78]) {
+      graphics.fillCircle(wheelX, height - wheelRadius, wheelRadius);
+    }
   }
 
   /** Rostinho redondo usado no lugar das fotos. As medidas são proporções do tamanho. */
