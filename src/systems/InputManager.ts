@@ -8,6 +8,7 @@ const KEY_BINDINGS: Record<Action, number[]> = {
   left: [KeyCodes.LEFT, KeyCodes.A],
   right: [KeyCodes.RIGHT, KeyCodes.D],
   jump: [KeyCodes.SPACE, KeyCodes.UP, KeyCodes.W],
+  attack: [KeyCodes.J, KeyCodes.X],
   confirm: [KeyCodes.ENTER, KeyCodes.SPACE],
 };
 

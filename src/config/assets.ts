@@ -25,6 +25,14 @@ export interface PlaceholderSpec {
   face?: FaceSpec;
   /** Se definido, desenha um tileset: um quadrado de height×height por cor, lado a lado. */
   tiles?: number[];
+  /** Se definido, desenha uma ferramenta: cabo fino (color) com a ponta embaixo. */
+  tool?: ToolSpec;
+}
+
+export interface ToolSpec {
+  headColor: number;
+  /** Altura da ponta (cerdas da vassoura, lâmina da pá), em pixels. */
+  headHeight: number;
 }
 
 export interface ImageAsset {
@@ -65,6 +73,28 @@ const SPRITE_ASSETS: readonly ImageAsset[] = [
     key: TextureKeys.CheckpointActive,
     path: 'assets/sprites/checkpoint-active.png',
     placeholder: { width: 32, height: 64, color: 0xffec27 },
+  },
+  {
+    key: TextureKeys.Broom,
+    path: 'assets/sprites/broom.png',
+    // Cabo marrom com cerdas amarelas embaixo.
+    placeholder: {
+      width: 16,
+      height: 40,
+      color: 0xab5236,
+      tool: { headColor: 0xffec27, headHeight: 14 },
+    },
+  },
+  {
+    key: TextureKeys.Shovel,
+    path: 'assets/sprites/shovel.png',
+    // Cabo marrom com a lâmina cinza embaixo.
+    placeholder: {
+      width: 14,
+      height: 36,
+      color: 0xab5236,
+      tool: { headColor: 0xc2c3c7, headHeight: 12 },
+    },
   },
   {
     // Ordem dos tiles: terra, grama, bloco, espinhos (igual ao tileset.png do Tiled).

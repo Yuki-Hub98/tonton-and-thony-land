@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { IMAGE_ASSETS, type FaceSpec, type PlaceholderSpec } from '../config/assets';
+import { IMAGE_ASSETS, type FaceSpec, type PlaceholderSpec, type ToolSpec } from '../config/assets';
 import {
   GAME_HEIGHT,
   GAME_WIDTH,
@@ -59,10 +59,12 @@ export class PreloadScene extends Phaser.Scene {
   }
 
   private generatePlaceholder(key: string, spec: PlaceholderSpec): void {
-    const { width, height, color, face, tiles } = spec;
+    const { width, height, color, face, tiles, tool } = spec;
     const graphics = this.add.graphics();
     if (face) {
       this.drawFace(graphics, width, color, face);
+    } else if (tool) {
+      this.drawTool(graphics, width, height, color, tool);
     } else if (tiles) {
       tiles.forEach((tileColor, i) => {
         graphics.fillStyle(tileColor);
@@ -77,6 +79,25 @@ export class PreloadScene extends Phaser.Scene {
     // Desenha os Graphics numa textura com a chave pedida e descarta o desenho.
     graphics.generateTexture(key, width, height);
     graphics.destroy();
+  }
+
+  /** Ferramenta (vassoura, pá): cabo fino no meio e a ponta mais larga embaixo. */
+  private drawTool(
+    graphics: Phaser.GameObjects.Graphics,
+    width: number,
+    height: number,
+    handleColor: number,
+    { headColor, headHeight }: ToolSpec,
+  ): void {
+    const handleWidth = Math.max(2, Math.round(width * 0.3));
+    const handleHeight = height - headHeight;
+    graphics.fillStyle(handleColor);
+    graphics.fillRect((width - handleWidth) / 2, 0, handleWidth, handleHeight);
+
+    graphics.fillStyle(headColor);
+    graphics.fillRect(0, handleHeight, width, headHeight);
+    graphics.lineStyle(1, 0x000000);
+    graphics.strokeRect(0, handleHeight, width, headHeight);
   }
 
   /** Rostinho redondo usado no lugar das fotos. As medidas são proporções do tamanho. */

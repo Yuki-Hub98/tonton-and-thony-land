@@ -18,6 +18,8 @@ export const TextureKeys = {
   Enemy: 'enemy',
   Checkpoint: 'checkpoint',
   CheckpointActive: 'checkpoint-active',
+  Broom: 'broom',
+  Shovel: 'shovel',
 } as const;
 
 export type TextureKey = (typeof TextureKeys)[keyof typeof TextureKeys];
@@ -26,4 +28,6 @@ export type TextureKey = (typeof TextureKeys)[keyof typeof TextureKeys];
 export const EventKeys = {
   /** Mudou o número de vidas. Valor: vidas restantes. */
   LivesChanged: 'lives:changed',
+  /** Pegou (true) ou perdeu (false) o equipamento. */
+  PlayerEquipped: 'player:equipped',
 } as const;

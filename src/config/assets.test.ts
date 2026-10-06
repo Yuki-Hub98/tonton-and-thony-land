@@ -24,6 +24,13 @@ describe('IMAGE_ASSETS', () => {
     }
   });
 
+  it.each(CHARACTER_IDS)('carrega as texturas do equipamento de %s', (id) => {
+    const keys = IMAGE_ASSETS.map((asset) => asset.key);
+    for (const key of CHARACTERS[id].equipment.textures) {
+      expect(keys).toContain(key);
+    }
+  });
+
   it('procura as fotos em assets/characters/<id>/<pose>.png', () => {
     const asset = IMAGE_ASSETS.find((a) => a.key === 'anthony-idle-1');
     expect(asset?.path).toBe('assets/characters/anthony/idle-1.png');

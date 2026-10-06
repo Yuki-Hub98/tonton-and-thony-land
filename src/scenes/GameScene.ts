@@ -6,6 +6,8 @@ import {
   type CharacterId,
 } from '../config/characters';
 import {
+  ATTACK_COOLDOWN_MS,
+  ATTACK_REACH,
   BLINK_MS,
   CAMERA_LEAD_RATIO,
   DEATH_DELAY_MS,
@@ -21,8 +23,10 @@ import { LEVELS } from '../config/levels';
 import { TextStyles } from '../config/textStyles';
 import { Checkpoint } from '../entities/Checkpoint';
 import { Enemy } from '../entities/Enemy';
+import { EquipmentPickup } from '../entities/EquipmentPickup';
 import { Flag } from '../entities/Flag';
 import { Player } from '../entities/Player';
+import { attackHitbox, isAttackReady } from '../logic/attack';
 import { isBlinkVisible } from '../logic/blink';
 import { hasFallenOut, isStomp, overlapsWithInset } from '../logic/collisionRules';
 import { LivesCounter } from '../logic/LivesCounter';
@@ -44,7 +48,7 @@ export interface GameSceneData {
   lives?: number;
 }
 
-/** A fase em si: monta o mapa do Tiled, o jogador, os inimigos e os perigos. */
+/** A fase em si: monta o mapa do Tiled, o jogador, os inimigos, os itens e os perigos. */
 export class GameScene extends Phaser.Scene {
   private character!: CharacterDef;
   private levelIndex = 0;
@@ -52,11 +56,13 @@ export class GameScene extends Phaser.Scene {
   private player?: Player;
   private ground!: Phaser.Tilemaps.TilemapLayer;
   private enemies!: Phaser.Physics.Arcade.Group;
+  private equipmentPickups!: Phaser.Physics.Arcade.StaticGroup;
   private inputManager!: InputManager;
   private cameraController!: CameraController;
   private state!: PlayerStateMachine;
   private lives!: LivesCounter;
   private respawnPoint!: Point;
+  private lastAttackAt = Number.NEGATIVE_INFINITY;
 
   constructor() {
     super(SceneKeys.Game);
@@ -69,6 +75,7 @@ export class GameScene extends Phaser.Scene {
     this.lives = new LivesCounter(data.lives ?? STARTING_LIVES);
     this.state = new PlayerStateMachine(INVINCIBLE_MS);
     this.player = undefined;
+    this.lastAttackAt = Number.NEGATIVE_INFINITY;
   }
 
   create(): void {
@@ -114,6 +121,13 @@ export class GameScene extends Phaser.Scene {
       this.touchEnemy(enemy as Enemy),
     );
 
+    // Os equipamentos também voltam a cada respawn, para dar para pegar de novo.
+    this.equipmentPickups = this.physics.add.staticGroup();
+    this.spawnEquipment();
+    this.physics.add.overlap(player, this.equipmentPickups, (_player, pickup) =>
+      this.pickUpEquipment(pickup as EquipmentPickup),
+    );
+
     if (hazards) {
       // O overlap com uma camada de tiles é chamado para todo tile perto do jogador, até os vazios:
       // o processCallback filtra só os espinhos, e só se encostar na parte de dentro deles.
@@ -143,9 +157,10 @@ export class GameScene extends Phaser.Scene {
     const player = this.player;
     if (!player) return;
     player.updateHead(time);
-    if (this.state.state !== 'normal') return;
+    if (!this.state.isInPlay) return;
 
     player.updateMovement(this.inputManager);
+    if (this.inputManager.justPressed('attack')) this.attack(time);
     this.cameraController.update(player);
     player.setBlinkVisible(isBlinkVisible(time, this.state.invincibleUntil, BLINK_MS));
 
@@ -161,9 +176,46 @@ export class GameScene extends Phaser.Scene {
     }
   }
 
+  /** Cria os equipamentos nos pontos do Tiled (de novo a cada respawn). */
+  private spawnEquipment(): void {
+    this.equipmentPickups.clear(true, true);
+    for (const object of this.level.objects.filter((o) => o.type === 'equipment')) {
+      this.equipmentPickups.add(new EquipmentPickup(this, object, this.character));
+    }
+  }
+
+  private pickUpEquipment(pickup: EquipmentPickup): void {
+    const player = this.player;
+    if (!player || pickup.isCollected) return;
+    // Já armado: deixa o item no lugar (serve para quem perder o equipamento mais adiante).
+    if (this.state.state !== 'normal') return;
+
+    this.state.send('pickupEquipment', this.time.now);
+    pickup.collect();
+    player.equip(this.time.now);
+    this.game.events.emit(EventKeys.PlayerEquipped, true);
+  }
+
+  /** Botão bater: só com equipamento, e respeitando a espera entre golpes. */
+  private attack(now: number): void {
+    const player = this.player;
+    if (!player || !this.state.canAttack) return;
+    if (!isAttackReady(now, this.lastAttackAt, ATTACK_COOLDOWN_MS)) return;
+    this.lastAttackAt = now;
+
+    player.swing();
+    const hitbox = attackHitbox(player.body, player.facing, ATTACK_REACH);
+    for (const child of this.enemies.getChildren()) {
+      const enemy = child as Enemy;
+      if (enemy.body.enable && overlapsWithInset(enemy.body, hitbox, 0)) {
+        enemy.knockOut(player.facing);
+      }
+    }
+  }
+
   private touchEnemy(enemy: Enemy): void {
     const body = this.player?.body;
-    if (!body || this.state.state !== 'normal') return;
+    if (!body || !this.state.isInPlay) return;
 
     const stomped = isStomp({
       playerVelocityY: body.velocity.y,
@@ -192,18 +244,30 @@ export class GameScene extends Phaser.Scene {
   }
 
   private reachCheckpoint(checkpoint: Checkpoint): void {
-    if (this.state.state !== 'normal') return;
+    if (!this.state.isInPlay) return;
     checkpoint.activate();
     this.respawnPoint = furthestRespawnPoint(this.respawnPoint, checkpoint.respawnPoint);
   }
 
-  /** Dano (inimigo, espinho) ou queda. A máquina de estados decide se morre. */
+  /**
+   * Dano (inimigo, espinho) ou queda. A máquina de estados decide:
+   * armado perde o equipamento; sem equipamento (ou caindo no buraco) morre.
+   */
   private hurtPlayer(cause: 'damage' | 'fall'): void {
     const player = this.player;
-    if (!player || this.state.state !== 'normal') return;
-    if (this.state.send(cause, this.time.now) !== 'dead') return;
+    if (!player || !this.state.isInPlay) return;
+    const now = this.time.now;
+    const wasArmed = this.state.state === 'armed';
+    const next = this.state.send(cause, now);
+    if (wasArmed && next !== 'armed') this.game.events.emit(EventKeys.PlayerEquipped, false);
 
-    player.die(cause === 'fall', this.time.now);
+    if (next === 'normal' && wasArmed) {
+      player.loseEquipment(now);
+      return;
+    }
+    if (next !== 'dead') return;
+
+    player.die(cause === 'fall', now);
     this.game.events.emit(EventKeys.LivesChanged, this.lives.loseLife());
     this.time.delayedCall(DEATH_DELAY_MS, () => this.finishDeath());
   }
@@ -221,6 +285,7 @@ export class GameScene extends Phaser.Scene {
     this.player?.respawnAt(this.respawnPoint, now);
     this.cameraController.snapTo(this.respawnPoint.x);
     this.spawnEnemies();
+    this.spawnEquipment();
   }
 
   private completeLevel(): void {
