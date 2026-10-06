@@ -10,6 +10,10 @@ export type HeadPose = (typeof HEAD_POSES)[number];
 
 export interface CharacterDef {
   id: CharacterId;
+  /**
+   * Nome mostrado no jogo. O site é público: use só o apelido, nunca o nome real
+   * (o id e as pastas das fotos são internos).
+   */
   displayName: string;
   /** Chaves de textura das fotos (formato `<id>-<pose>`). */
   heads: { idle: string[]; sad: string; happy: string };
@@ -25,7 +29,7 @@ export interface CharacterDef {
 export const CHARACTERS: Record<CharacterId, CharacterDef> = {
   anthony: {
     id: 'anthony',
-    displayName: 'Anthony',
+    displayName: 'Thony',
     heads: {
       idle: ['anthony-idle-1', 'anthony-idle-2', 'anthony-idle-3'],
       sad: 'anthony-sad',
@@ -36,7 +40,7 @@ export const CHARACTERS: Record<CharacterId, CharacterDef> = {
   },
   antonela: {
     id: 'antonela',
-    displayName: 'Antonela',
+    displayName: 'Tonton',
     heads: {
       idle: ['antonela-idle-1', 'antonela-idle-2', 'antonela-idle-3'],
       sad: 'antonela-sad',
@@ -49,7 +53,7 @@ export const CHARACTERS: Record<CharacterId, CharacterDef> = {
 
 export const CHARACTER_IDS = Object.keys(CHARACTERS) as CharacterId[];
 
-/** Personagem usado enquanto não existe a tela de seleção (Etapa 3). */
+/** Personagem usado quando a fase é aberta sem passar pela seleção (ex.: testes manuais). */
 export const DEFAULT_CHARACTER_ID: CharacterId = 'anthony';
 
 export function headTextureKey(id: CharacterId, pose: HeadPose): string {

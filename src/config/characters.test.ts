@@ -10,6 +10,12 @@ describe('CHARACTERS', () => {
     expect(CHARACTERS[id].displayName.trim()).not.toBe('');
   });
 
+  it.each(CHARACTER_IDS)('%s aparece na tela com o apelido, não com o nome real', (id) => {
+    // Privacidade: o jogo é publicado num site público. O id é o nome real (uso interno).
+    expect(CHARACTERS[id].displayName.toLowerCase()).not.toBe(id);
+    expect(['Thony', 'Tonton']).toContain(CHARACTERS[id].displayName);
+  });
+
   it.each(CHARACTER_IDS)('%s tem 3 fotos idle, sad e happy no padrão <id>-<pose>', (id) => {
     const { heads } = CHARACTERS[id];
     expect(heads.idle).toEqual([
