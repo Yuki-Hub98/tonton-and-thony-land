@@ -7,7 +7,7 @@ import { LevelCompleteScene } from '../scenes/LevelCompleteScene';
 import { PreloadScene } from '../scenes/PreloadScene';
 import { SelectScene } from '../scenes/SelectScene';
 import { TitleScene } from '../scenes/TitleScene';
-import { BACKGROUND_COLOR, GAME_HEIGHT, GRAVITY_Y } from './constants';
+import { BACKGROUND_COLOR, GAME_HEIGHT, GRAVITY_Y, TOUCH_MAX_POINTERS } from './constants';
 import { currentGameWidth } from './screen';
 
 export const gameConfig: Phaser.Types.Core.GameConfig = {
@@ -23,6 +23,8 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
   },
+  // Por padrão o Phaser acompanha um dedo só; os botões de toque precisam de vários.
+  input: { activePointers: TOUCH_MAX_POINTERS },
   physics: {
     default: 'arcade',
     arcade: {
