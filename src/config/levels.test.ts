@@ -67,6 +67,18 @@ describe('LEVELS', () => {
     }
   });
 
+  it('o carro aparece só na última fase', () => {
+    LEVELS.forEach(({ path }, index) => {
+      const level = parseLevel(fileFor(path), TILE_SIZE);
+      const hasCar = level.objects.some((o) => o.type === 'car');
+      expect(hasCar).toBe(index === LEVELS.length - 1);
+    });
+  });
+
+  it('tem as 3 fases do jogo', () => {
+    expect(LEVELS).toHaveLength(3);
+  });
+
   it.each(LEVELS)('$key tem os checkpoints entre o início e a bandeira', ({ path }) => {
     const level = parseLevel(fileFor(path), TILE_SIZE);
     for (const checkpoint of level.objects.filter((o) => o.type === 'checkpoint')) {
