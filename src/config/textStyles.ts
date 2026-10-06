@@ -18,6 +18,9 @@ export const TextStyles = {
     fontFamily: FONT_FAMILY,
     fontSize: '28px',
     color: '#ffffff',
+    // Contorno para continuar legível em cima de imagens coloridas.
+    stroke: '#000000',
+    strokeThickness: 5,
   },
   heading: {
     fontFamily: FONT_FAMILY,

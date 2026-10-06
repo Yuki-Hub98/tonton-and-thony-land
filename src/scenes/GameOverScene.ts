@@ -2,7 +2,6 @@ import Phaser from 'phaser';
 import { CHARACTERS, type CharacterId } from '../config/characters';
 import {
   GAME_HEIGHT,
-  GAME_WIDTH,
   MENU_BUTTON_GAP,
   MENU_BUTTON_HEIGHT,
   MENU_BUTTON_WIDTH,
@@ -50,7 +49,7 @@ export class GameOverScene extends Phaser.Scene {
   }
 
   create(): void {
-    const centerX = GAME_WIDTH / 2;
+    const centerX = this.scale.width / 2;
     const character = CHARACTERS[this.over.characterId];
 
     this.add.text(centerX, GAME_HEIGHT * 0.13, TEXTS.gameOver, TextStyles.heading).setOrigin(0.5);

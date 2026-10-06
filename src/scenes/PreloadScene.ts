@@ -1,12 +1,7 @@
 import Phaser from 'phaser';
 import { IMAGE_ASSETS, type FaceSpec, type PlaceholderSpec, type ToolSpec } from '../config/assets';
-import {
-  GAME_HEIGHT,
-  GAME_WIDTH,
-  PRELOAD_BAR_HEIGHT,
-  PRELOAD_BAR_WIDTH,
-} from '../config/constants';
-import { SceneKeys } from '../config/keys';
+import { GAME_HEIGHT, PRELOAD_BAR_HEIGHT, PRELOAD_BAR_WIDTH } from '../config/constants';
+import { RegistryKeys, SceneKeys } from '../config/keys';
 import { LEVELS } from '../config/levels';
 
 /**
@@ -33,17 +28,21 @@ export class PreloadScene extends Phaser.Scene {
   }
 
   create(): void {
+    const missingArt: string[] = [];
     for (const asset of IMAGE_ASSETS) {
       if (!this.textures.exists(asset.key)) {
         this.generatePlaceholder(asset.key, asset.placeholder);
+        missingArt.push(asset.key);
       }
     }
+    // As cenas consultam isto para saber se estão com a arte de verdade ou com o placeholder.
+    this.registry.set(RegistryKeys.MissingArt, missingArt);
 
     this.scene.start(SceneKeys.Title);
   }
 
   private createProgressBar(): void {
-    const x = (GAME_WIDTH - PRELOAD_BAR_WIDTH) / 2;
+    const x = (this.scale.width - PRELOAD_BAR_WIDTH) / 2;
     const y = (GAME_HEIGHT - PRELOAD_BAR_HEIGHT) / 2;
 
     this.add

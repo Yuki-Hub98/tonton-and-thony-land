@@ -2,7 +2,6 @@ import Phaser from 'phaser';
 import { CHARACTER_IDS, CHARACTERS, type CharacterId } from '../config/characters';
 import {
   GAME_HEIGHT,
-  GAME_WIDTH,
   SELECT_CARD_FOCUS_SCALE,
   SELECT_CARD_GAP,
   SELECT_CARD_HEIGHT,
@@ -42,7 +41,7 @@ export class SelectScene extends Phaser.Scene {
   create(): void {
     this.cards = [];
     this.leaving = false;
-    const centerX = GAME_WIDTH / 2;
+    const centerX = this.scale.width / 2;
 
     this.add
       .text(centerX, GAME_HEIGHT * 0.13, TEXTS.chooseCharacter, TextStyles.heading)

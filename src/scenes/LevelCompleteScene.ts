@@ -5,7 +5,6 @@ import {
   CELEBRATE_HOP_HEIGHT,
   CELEBRATE_HOP_MS,
   GAME_HEIGHT,
-  GAME_WIDTH,
   SELECT_HEAD_SIZE,
 } from '../config/constants';
 import { SceneKeys } from '../config/keys';
@@ -39,7 +38,7 @@ export class LevelCompleteScene extends Phaser.Scene {
   }
 
   create(): void {
-    const centerX = GAME_WIDTH / 2;
+    const centerX = this.scale.width / 2;
     const character = CHARACTERS[this.completed.characterId];
     const levelName = LEVELS[this.completed.levelIndex]?.name ?? '';
 

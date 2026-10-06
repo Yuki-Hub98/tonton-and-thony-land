@@ -38,7 +38,16 @@ describe('IMAGE_ASSETS', () => {
 
   it('usa caminhos relativos dentro de assets/, para funcionar com o base do GitHub Pages', () => {
     for (const asset of IMAGE_ASSETS) {
-      expect(asset.path).toMatch(/^assets\/.+\.png$/);
+      expect(asset.path).toMatch(/^assets\/.+\.(png|jpg)$/);
+    }
+  });
+
+  it('usa PNG nas fotos de cabeça (precisam de fundo transparente)', () => {
+    for (const id of CHARACTER_IDS) {
+      const { heads } = CHARACTERS[id];
+      for (const key of [...heads.idle, heads.sad, heads.happy]) {
+        expect(IMAGE_ASSETS.find((a) => a.key === key)?.path).toMatch(/\.png$/);
+      }
     }
   });
 

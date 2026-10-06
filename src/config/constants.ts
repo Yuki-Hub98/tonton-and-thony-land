@@ -1,8 +1,13 @@
 // Números do jogo. Ajuste a dificuldade e o visual mexendo só aqui.
 
-/** Resolução lógica do jogo. O Phaser escala esse tamanho para caber na tela. */
-export const GAME_WIDTH = 960;
+/**
+ * Resolução lógica do jogo. A altura é fixa; a largura acompanha a proporção da tela
+ * (ver logic/screenSize.ts), entre o mínimo (tablet 4:3) e o máximo (celular bem comprido).
+ * Nas cenas, use this.scale.width para saber a largura atual.
+ */
 export const GAME_HEIGHT = 540;
+export const GAME_MIN_WIDTH = 720;
+export const GAME_MAX_WIDTH = 1280;
 
 export const BACKGROUND_COLOR = '#1d2b53';
 
@@ -109,6 +114,10 @@ export const IDLE_SLIDE_MS = 1500;
 export const HAPPY_DURATION_MS = 2500;
 /** Quanto tempo a cabeça fica triste depois de levar dano (sem morrer). */
 export const SAD_DURATION_MS = 1500;
+
+/** Altura (fração da tela) do "toque para começar": no meio sem arte, embaixo com a arte. */
+export const TITLE_PROMPT_Y_RATIO = 0.68;
+export const TITLE_PROMPT_Y_RATIO_WITH_ART = 0.94;
 
 /** Tempo do pisca-pisca do "toque para começar", em ms (meio ciclo). */
 export const PROMPT_BLINK_MS = 700;

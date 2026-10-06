@@ -7,17 +7,19 @@ import { LevelCompleteScene } from '../scenes/LevelCompleteScene';
 import { PreloadScene } from '../scenes/PreloadScene';
 import { SelectScene } from '../scenes/SelectScene';
 import { TitleScene } from '../scenes/TitleScene';
-import { BACKGROUND_COLOR, GAME_HEIGHT, GAME_WIDTH, GRAVITY_Y } from './constants';
+import { BACKGROUND_COLOR, GAME_HEIGHT, GRAVITY_Y } from './constants';
+import { currentGameWidth } from './screen';
 
 export const gameConfig: Phaser.Types.Core.GameConfig = {
   // AUTO usa WebGL quando o navegador suporta e cai para Canvas quando não.
   type: Phaser.AUTO,
   parent: 'game',
-  width: GAME_WIDTH,
+  width: currentGameWidth(),
   height: GAME_HEIGHT,
   backgroundColor: BACKGROUND_COLOR,
   scale: {
-    // FIT aumenta/diminui o jogo mantendo a proporção 16:9; CENTER_BOTH centraliza.
+    // FIT aumenta/diminui o jogo mantendo a proporção; como a largura já segue a tela,
+    // o jogo a preenche inteira. CENTER_BOTH centraliza o que sobrar fora do mínimo/máximo.
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
   },
