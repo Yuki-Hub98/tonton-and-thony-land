@@ -13,7 +13,9 @@ import { TextStyles } from '../config/textStyles';
 import { TEXTS } from '../config/texts';
 import { nextLevelIndex } from '../logic/levelProgress';
 import { InputManager } from '../systems/InputManager';
+import { SaveManager } from '../systems/SaveManager';
 import type { GameSceneData } from './GameScene';
+import type { VictoryData } from './VictoryScene';
 
 export interface LevelCompleteData {
   characterId: CharacterId;
@@ -22,7 +24,10 @@ export interface LevelCompleteData {
   lives: number;
 }
 
-/** "Fase concluída!" com a cabeça feliz do personagem; continuar leva à próxima fase. */
+/**
+ * "Fase concluída!" com a cabeça feliz do personagem; continuar leva à próxima fase
+ * (ou à vitória, depois da última). O progresso é salvo aqui, logo ao concluir.
+ */
 export class LevelCompleteScene extends Phaser.Scene {
   private completed!: LevelCompleteData;
   private inputManager!: InputManager;
@@ -38,6 +43,7 @@ export class LevelCompleteScene extends Phaser.Scene {
   }
 
   create(): void {
+    this.saveProgress();
     const centerX = this.scale.width / 2;
     const character = CHARACTERS[this.completed.characterId];
     const levelName = LEVELS[this.completed.levelIndex]?.name ?? '';
@@ -75,8 +81,8 @@ export class LevelCompleteScene extends Phaser.Scene {
 
     const next = nextLevelIndex(this.completed.levelIndex, LEVELS.length);
     if (next === null) {
-      // Última fase: a tela de vitória entra na Etapa 9; por enquanto volta ao título.
-      this.scene.start(SceneKeys.Title);
+      const data: VictoryData = { characterId: this.completed.characterId };
+      this.scene.start(SceneKeys.Victory, data);
       return;
     }
     const data: GameSceneData = {
@@ -85,5 +91,14 @@ export class LevelCompleteScene extends Phaser.Scene {
       lives: this.completed.lives,
     };
     this.scene.start(SceneKeys.Game, data);
+  }
+
+  /** Libera a próxima fase para o "Continuar"; depois da última, o jogo foi zerado e recomeça. */
+  private saveProgress(): void {
+    const save = SaveManager.fromBrowser(LEVELS.length);
+    const { characterId, levelIndex } = this.completed;
+    const next = nextLevelIndex(levelIndex, LEVELS.length);
+    if (next === null) save.clearProgress(characterId);
+    else save.recordLevelReached(characterId, next);
   }
 }

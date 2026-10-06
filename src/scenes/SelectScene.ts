@@ -13,11 +13,14 @@ import {
   UI_HIGHLIGHT_COLOR,
 } from '../config/constants';
 import { SceneKeys } from '../config/keys';
+import { LEVELS } from '../config/levels';
 import { TextStyles } from '../config/textStyles';
 import { TEXTS } from '../config/texts';
 import { HeadController } from '../components/HeadController';
 import { moveSelection } from '../logic/menuSelection';
 import { InputManager } from '../systems/InputManager';
+import { SaveManager } from '../systems/SaveManager';
+import type { ContinueData } from './ContinueScene';
 import type { GameSceneData } from './GameScene';
 
 interface CharacterCard {
@@ -119,6 +122,13 @@ export class SelectScene extends Phaser.Scene {
     if (this.leaving || !card) return;
     this.leaving = true;
 
+    // Já jogou antes com este personagem: pergunta se quer continuar de onde parou.
+    const savedLevel = SaveManager.fromBrowser(LEVELS.length).continueLevel(card.id);
+    if (savedLevel > 0) {
+      const data: ContinueData = { characterId: card.id, levelIndex: savedLevel };
+      this.scene.start(SceneKeys.Continue, data);
+      return;
+    }
     const data: GameSceneData = { characterId: card.id };
     this.scene.start(SceneKeys.Game, data);
   }

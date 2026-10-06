@@ -9,6 +9,8 @@ export const SceneKeys = {
   LevelComplete: 'level-complete',
   HUD: 'hud',
   GameOver: 'game-over',
+  Continue: 'continue',
+  Victory: 'victory',
 } as const;
 
 export const TextureKeys = {
