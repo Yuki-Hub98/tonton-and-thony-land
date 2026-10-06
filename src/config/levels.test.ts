@@ -57,6 +57,16 @@ describe('LEVELS', () => {
     }
   });
 
+  it.each(LEVELS)('$key tem no máximo um carro, entre o início e a bandeira', ({ path }) => {
+    const level = parseLevel(fileFor(path), TILE_SIZE);
+    const cars = level.objects.filter((o) => o.type === 'car');
+    expect(cars.length).toBeLessThanOrEqual(1);
+    for (const car of cars) {
+      expect(car.x).toBeGreaterThan(level.spawn.x);
+      expect(car.x).toBeLessThan(level.flag.x);
+    }
+  });
+
   it.each(LEVELS)('$key tem os checkpoints entre o início e a bandeira', ({ path }) => {
     const level = parseLevel(fileFor(path), TILE_SIZE);
     for (const checkpoint of level.objects.filter((o) => o.type === 'checkpoint')) {

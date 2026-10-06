@@ -5570,12 +5570,23 @@
      "height": 32,
      "rotation": 0,
      "visible": true
+    },
+    {
+     "id": 9,
+     "name": "carro-teste-remover-quando-houver-fase-3",
+     "type": "car",
+     "x": 3008,
+     "y": 448,
+     "width": 32,
+     "height": 32,
+     "rotation": 0,
+     "visible": true
     }
    ]
   }
  ],
  "nextlayerid": 4,
- "nextobjectid": 9,
+ "nextobjectid": 10,
  "orientation": "orthogonal",
  "renderorder": "right-down",
  "tiledversion": "1.10.2",
