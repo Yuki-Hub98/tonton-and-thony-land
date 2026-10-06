@@ -9,6 +9,12 @@ function armedMachine(): PlayerStateMachine {
   return machine;
 }
 
+function carMachine(): PlayerStateMachine {
+  const machine = new PlayerStateMachine(INVINCIBLE_MS);
+  machine.send('pickupCar', 0);
+  return machine;
+}
+
 function deadMachine(): PlayerStateMachine {
   const machine = new PlayerStateMachine(INVINCIBLE_MS);
   machine.send('damage', 0);
@@ -39,6 +45,14 @@ describe('PlayerStateMachine', () => {
 
     it('fica armado ao pegar o equipamento', () => {
       expect(new PlayerStateMachine(INVINCIBLE_MS).send('pickupEquipment', 100)).toBe('armed');
+    });
+
+    it('vira carro ao pegar o carro', () => {
+      expect(new PlayerStateMachine(INVINCIBLE_MS).send('pickupCar', 100)).toBe('car');
+    });
+
+    it('não dirige sozinho', () => {
+      expect(new PlayerStateMachine(INVINCIBLE_MS).isAutoDriving).toBe(false);
     });
 
     it.each<PlayerEvent>(['respawn', 'gameOver'])('ignora %s', (event) => {
@@ -94,8 +108,45 @@ describe('PlayerStateMachine', () => {
       expect(armedMachine().send('reachFlag', 100)).toBe('levelComplete');
     });
 
+    it('vira carro ao pegar o carro', () => {
+      expect(armedMachine().send('pickupCar', 100)).toBe('car');
+    });
+
     it.each<PlayerEvent>(['pickupEquipment', 'respawn', 'gameOver'])('ignora %s', (event) => {
       expect(armedMachine().send(event, 100)).toBe('armed');
+    });
+  });
+
+  describe('no carro', () => {
+    it('dirige sozinho, sem poder bater, e continua em jogo', () => {
+      const machine = carMachine();
+      expect(machine.isAutoDriving).toBe(true);
+      expect(machine.canAttack).toBe(false);
+      expect(machine.isInPlay).toBe(true);
+    });
+
+    it('é invencível o tempo todo', () => {
+      const machine = carMachine();
+      expect(machine.isInvincible(0)).toBe(true);
+      expect(machine.isInvincible(1_000_000)).toBe(true);
+    });
+
+    it('termina a fase ao chegar na bandeira', () => {
+      expect(carMachine().send('reachFlag', 100)).toBe('levelComplete');
+    });
+
+    it.each<PlayerEvent>(['damage', 'fall', 'pickupEquipment', 'pickupCar', 'respawn', 'gameOver'])(
+      'ignora %s',
+      (event) => {
+        expect(carMachine().send(event, 100)).toBe('car');
+      },
+    );
+
+    it('não dirige mais depois da bandeira', () => {
+      const machine = carMachine();
+      machine.send('reachFlag', 100);
+      expect(machine.isAutoDriving).toBe(false);
+      expect(machine.isInvincible(100)).toBe(false);
     });
   });
 
@@ -113,7 +164,7 @@ describe('PlayerStateMachine', () => {
       expect(deadMachine().send('gameOver', 1000)).toBe('gameOver');
     });
 
-    it.each<PlayerEvent>(['pickupEquipment', 'damage', 'fall', 'reachFlag'])(
+    it.each<PlayerEvent>(['pickupEquipment', 'pickupCar', 'damage', 'fall', 'reachFlag'])(
       'ignora %s',
       (event) => {
         expect(deadMachine().send(event, 1000)).toBe('dead');
@@ -153,7 +204,7 @@ describe('PlayerStateMachine', () => {
     });
   });
 
-  it.each<PlayerEvent>(['pickupEquipment', 'damage', 'fall', 'respawn', 'gameOver'])(
+  it.each<PlayerEvent>(['pickupEquipment', 'pickupCar', 'damage', 'fall', 'respawn', 'gameOver'])(
     'fase concluída é final: ignora %s',
     (event) => {
       const machine = new PlayerStateMachine(INVINCIBLE_MS);
@@ -162,7 +213,7 @@ describe('PlayerStateMachine', () => {
     },
   );
 
-  it.each<PlayerEvent>(['pickupEquipment', 'damage', 'fall', 'reachFlag', 'respawn'])(
+  it.each<PlayerEvent>(['pickupEquipment', 'pickupCar', 'damage', 'fall', 'reachFlag', 'respawn'])(
     'game over é final: ignora %s',
     (event) => {
       const machine = deadMachine();
