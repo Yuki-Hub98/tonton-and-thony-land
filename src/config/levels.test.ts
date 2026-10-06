@@ -47,6 +47,16 @@ describe('LEVELS', () => {
     }
   });
 
+  it.each(LEVELS)('$key tem pelo menos um equipamento entre o início e a bandeira', ({ path }) => {
+    const level = parseLevel(fileFor(path), TILE_SIZE);
+    const equipment = level.objects.filter((o) => o.type === 'equipment');
+    expect(equipment.length).toBeGreaterThan(0);
+    for (const item of equipment) {
+      expect(item.x).toBeGreaterThan(level.spawn.x);
+      expect(item.x).toBeLessThan(level.flag.x);
+    }
+  });
+
   it.each(LEVELS)('$key tem os checkpoints entre o início e a bandeira', ({ path }) => {
     const level = parseLevel(fileFor(path), TILE_SIZE);
     for (const checkpoint of level.objects.filter((o) => o.type === 'checkpoint')) {
