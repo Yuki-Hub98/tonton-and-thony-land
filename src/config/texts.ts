@@ -7,4 +7,8 @@ export const TEXTS = {
   selectHint: '← → para escolher  •  Espaço para começar',
   levelComplete: (levelName: string) => `${levelName} concluída!`,
   pressContinue: 'Toque na tela ou aperte Espaço para continuar',
+  gameOver: 'Fim de jogo',
+  tryAgain: 'Tentar de novo',
+  changeCharacter: 'Trocar personagem',
+  menuHint: '← → para escolher  •  Espaço para confirmar',
 } as const;

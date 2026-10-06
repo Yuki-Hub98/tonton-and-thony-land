@@ -36,4 +36,22 @@ describe('LEVELS', () => {
     const level = parseLevel(fileFor(path), TILE_SIZE);
     expect(level.flag.x).toBeGreaterThan(level.spawn.x);
   });
+
+  it.each(LEVELS)('$key tem todos os objetos dentro do mapa', ({ path }) => {
+    const level = parseLevel(fileFor(path), TILE_SIZE);
+    for (const object of level.objects) {
+      expect(object.x).toBeGreaterThanOrEqual(0);
+      expect(object.x + object.width).toBeLessThanOrEqual(level.widthPx);
+      expect(object.y).toBeGreaterThanOrEqual(0);
+      expect(object.y + object.height).toBeLessThanOrEqual(level.heightPx);
+    }
+  });
+
+  it.each(LEVELS)('$key tem os checkpoints entre o início e a bandeira', ({ path }) => {
+    const level = parseLevel(fileFor(path), TILE_SIZE);
+    for (const checkpoint of level.objects.filter((o) => o.type === 'checkpoint')) {
+      expect(checkpoint.x).toBeGreaterThan(level.spawn.x);
+      expect(checkpoint.x).toBeLessThan(level.flag.x);
+    }
+  });
 });

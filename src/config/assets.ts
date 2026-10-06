@@ -11,7 +11,7 @@ import { TextureKeys } from './keys';
 
 /** Rostinho desenhado no placeholder da cabeça. */
 export interface FaceSpec {
-  expression: 'neutral' | 'sad' | 'happy';
+  expression: 'neutral' | 'sad' | 'happy' | 'grumpy';
   /** Para onde os olhos olham: -1 esquerda, 0 centro, 1 direita. */
   lookX: -1 | 0 | 1;
 }
@@ -44,6 +44,27 @@ const SPRITE_ASSETS: readonly ImageAsset[] = [
     key: TextureKeys.Flag,
     path: 'assets/sprites/flag.png',
     placeholder: { width: 32, height: 96, color: 0x00e436 },
+  },
+  {
+    key: TextureKeys.Enemy,
+    path: 'assets/sprites/enemy-walker.png',
+    // Olha para a esquerda: é para lá que ele começa andando.
+    placeholder: {
+      width: 32,
+      height: 32,
+      color: 0x7e2553,
+      face: { expression: 'grumpy', lookX: -1 },
+    },
+  },
+  {
+    key: TextureKeys.Checkpoint,
+    path: 'assets/sprites/checkpoint.png',
+    placeholder: { width: 32, height: 64, color: 0x83769c },
+  },
+  {
+    key: TextureKeys.CheckpointActive,
+    path: 'assets/sprites/checkpoint-active.png',
+    placeholder: { width: 32, height: 64, color: 0xffec27 },
   },
   {
     // Ordem dos tiles: terra, grama, bloco, espinhos (igual ao tileset.png do Tiled).
