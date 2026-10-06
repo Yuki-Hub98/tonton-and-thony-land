@@ -66,7 +66,7 @@ export const HAND_HEIGHT_RATIO = 0.55;
 /** Inclinação do item parado (graus): a ponta vai um pouco para a frente. */
 export const HAND_ITEM_REST_ANGLE = 25;
 /** Até onde o item gira no golpe (graus) e quanto tempo leva para ir (a volta leva o mesmo). */
-export const HAND_ITEM_SWING_ANGLE = 120;
+export const HAND_ITEM_SWING_ANGLE = 110;
 export const HAND_ITEM_SWING_MS = 90;
 
 /** Item coletável: sobe e desce parado no lugar, e some subindo ao ser pego. */

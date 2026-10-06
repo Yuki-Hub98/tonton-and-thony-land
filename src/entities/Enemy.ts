@@ -1,12 +1,18 @@
 import Phaser from 'phaser';
-import { ENEMY_SPEED, ENEMY_SQUASH_MS } from '../config/constants';
+import {
+  ENEMY_KNOCKOUT_DISTANCE,
+  ENEMY_KNOCKOUT_HEIGHT,
+  ENEMY_KNOCKOUT_MS,
+  ENEMY_SPEED,
+  ENEMY_SQUASH_MS,
+} from '../config/constants';
 import { TextureKeys } from '../config/keys';
 import { hasFallenOut } from '../logic/collisionRules';
 import { nextPatrolDirection, type Direction } from '../logic/enemyPatrol';
 
 /**
  * Inimigo básico: anda para um lado e vira ao bater na parede ou chegar na beirada.
- * Pisar em cima derrota; encostar de lado machuca o jogador.
+ * Pisar em cima ou bater com o equipamento derrota; encostar de lado machuca o jogador.
  */
 export class Enemy extends Phaser.Physics.Arcade.Sprite {
   declare body: Phaser.Physics.Arcade.Body;
@@ -52,6 +58,20 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
       targets: this,
       scaleY: 0.3,
       duration: ENEMY_SQUASH_MS,
+      onComplete: () => this.destroy(),
+    });
+  }
+
+  /** Levou um golpe: desliga a física, vira de cabeça para baixo e voa para longe sumindo. */
+  knockOut(direction: Direction): void {
+    this.body.enable = false;
+    this.setFlipY(true);
+    this.scene.tweens.add({
+      targets: this,
+      x: this.x + direction * ENEMY_KNOCKOUT_DISTANCE,
+      y: this.y - ENEMY_KNOCKOUT_HEIGHT,
+      alpha: 0,
+      duration: ENEMY_KNOCKOUT_MS,
       onComplete: () => this.destroy(),
     });
   }
