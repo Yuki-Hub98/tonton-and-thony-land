@@ -1,5 +1,6 @@
 import type Phaser from 'phaser';
 import type { CharacterDef } from '../config/characters';
+import { PICKUP_EQUIPMENT_HEIGHT } from '../config/constants';
 import type { LevelObject } from '../logic/levelSchema';
 import { Pickup } from './Pickup';
 
@@ -10,6 +11,6 @@ export class EquipmentPickup extends Pickup {
     if (texture === undefined) {
       throw new Error(`${character.displayName} precisa de pelo menos uma textura de equipamento.`);
     }
-    super(scene, area, texture);
+    super(scene, area, texture, PICKUP_EQUIPMENT_HEIGHT);
   }
 }

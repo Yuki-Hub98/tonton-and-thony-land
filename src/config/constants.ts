@@ -87,9 +87,13 @@ export const BODY_HITBOX_HEIGHT = 40;
 export const BODY_WALK_FPS = 11;
 export const BODY_WALK_MIN_SPEED = 5;
 
-/** Item na mão: altura na tela, altura da mão (fração do corpo, a partir dos pés) e ângulos. */
-export const HAND_ITEM_HEIGHT = 40;
-export const HAND_HEIGHT_RATIO = 0.55;
+/**
+ * Item na mão: altura na tela e ponto da pegada (fração da altura da imagem, a partir do topo).
+ * A mão fica no punho da arte (BODY_NEAR_HAND/BODY_FAR_HAND, ~18 px acima dos pés); segurando
+ * um pouco acima das cerdas, a ponta da vassoura inclinada chega bem no chão.
+ */
+export const HAND_ITEM_HEIGHT = 48;
+export const HAND_ITEM_GRIP_Y = 0.58;
 /** Inclinação do item parado (graus): a ponta vai um pouco para a frente. */
 export const HAND_ITEM_REST_ANGLE = 25;
 /** Até onde o item gira no golpe (graus) e quanto tempo leva para ir (a volta leva o mesmo). */
@@ -110,6 +114,10 @@ export const PICKUP_BOB_HEIGHT = 6;
 export const PICKUP_BOB_MS = 600;
 export const PICKUP_COLLECT_RISE = 24;
 export const PICKUP_COLLECT_MS = 250;
+/** Altura do item coletável na tela, seja qual for o tamanho da imagem. */
+export const PICKUP_EQUIPMENT_HEIGHT = 40;
+/** Carro coletável: a mesma escala do carro dirigido (128 px da arte × BODY_SCALE). */
+export const PICKUP_CAR_HEIGHT = 32;
 
 /** HUD: ícones de vida no canto da tela. */
 export const HUD_MARGIN = 16;

@@ -21,32 +21,36 @@ export function chooseBodyAnimation({
 }
 
 /**
- * Ponto do pescoço num quadro, em pixels da imagem original:
+ * Ponto de encaixe num quadro (pescoço, mão), em pixels da imagem original:
  * x a partir da borda esquerda do quadro (arte olhando para a direita) e y a partir do topo.
  */
-export interface NeckPoint {
+export interface ArtPoint {
   x: number;
   y: number;
 }
 
-/** Pescoço do quadro; quadro sem dado usa `fallback`, para a cabeça nunca sumir por um erro. */
-export function neckFor(frame: number, neck: readonly NeckPoint[], fallback: NeckPoint): NeckPoint {
-  return neck[frame] ?? fallback;
+/** Ponto do quadro; quadro sem dado usa `fallback`, para a cabeça ou o item nunca sumir por um erro. */
+export function pointForFrame(
+  frame: number,
+  points: readonly ArtPoint[],
+  fallback: ArtPoint,
+): ArtPoint {
+  return points[frame] ?? fallback;
 }
 
 /**
- * Onde a base da cabeça fica em relação aos pés do corpo, já na escala da fase.
+ * Onde um ponto do quadro (pescoço, mão) fica em relação aos pés do corpo, já na escala da fase.
  * A arte olha para a direita; virado para a esquerda (espelhado), o deslocamento em x inverte.
  */
-export function headOffset(
-  neck: NeckPoint,
+export function attachmentOffset(
+  point: ArtPoint,
   frameWidth: number,
   frameHeight: number,
   scale: number,
   facing: 1 | -1,
-): NeckPoint {
+): ArtPoint {
   return {
-    x: facing * (neck.x - frameWidth / 2) * scale,
-    y: (neck.y - frameHeight) * scale,
+    x: facing * (point.x - frameWidth / 2) * scale,
+    y: (point.y - frameHeight) * scale,
   };
 }

@@ -2,6 +2,10 @@ import Phaser from 'phaser';
 import {
   BODY_FRAME_HEIGHT,
   BODY_FRAME_WIDTH,
+  BODY_FAR_HAND,
+  BODY_FAR_HAND_FALLBACK,
+  BODY_NEAR_HAND,
+  BODY_NEAR_HAND_FALLBACK,
   BODY_NECK_FALLBACK,
   bodyAnimationKey,
 } from '../config/bodySprite';
@@ -15,7 +19,7 @@ import {
   CAR_HEAD_ANCHOR_Y,
   CAR_SPEED,
   DEATH_JUMP_VELOCITY,
-  HAND_HEIGHT_RATIO,
+  HAND_ITEM_GRIP_Y,
   HAND_ITEM_HEIGHT,
   HAND_ITEM_REST_ANGLE,
   HAND_ITEM_SWING_ANGLE,
@@ -31,17 +35,17 @@ import { HeadController } from '../components/HeadController';
 import { shouldAutoJump } from '../logic/autoDrive';
 import {
   chooseBodyAnimation,
-  headOffset,
-  neckFor,
+  attachmentOffset,
+  pointForFrame,
   type BodyAnimation,
-  type NeckPoint,
+  type ArtPoint,
 } from '../logic/bodyAnimation';
 import type { Direction } from '../logic/enemyPatrol';
 import { canJump, cutJumpVelocity, horizontalVelocity } from '../logic/movement';
 import type { Point } from '../logic/respawnPoint';
 import type { InputManager } from '../systems/InputManager';
 
-/** Item segurado: a mão da frente fica na frente do corpo; a de trás, atrás. */
+/** Item segurado: o da frente é desenhado na frente do corpo; o de trás, atrás. */
 interface HandItem {
   image: Phaser.GameObjects.Image;
   front: boolean;
@@ -60,7 +64,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   private readonly headController: HeadController;
   private readonly handItems: HandItem[];
   private readonly bodyTexture: string;
-  private readonly neck: readonly NeckPoint[];
+  private readonly neck: readonly ArtPoint[];
   private swinging = false;
   private inCar = false;
 
@@ -234,8 +238,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   private createHandItem(texture: string, front: boolean): HandItem {
     const image = this.scene.add
       .image(this.x, this.y, texture)
-      // Segura perto da ponta de cima do cabo; a vassoura/pá fica pendurada para baixo.
-      .setOrigin(0.5, 0.15)
+      // Ponto da pegada no cabo: a mão segura ali e o golpe gira em volta dele.
+      .setOrigin(0.5, HAND_ITEM_GRIP_Y)
       .setVisible(false);
     // Arte de qualquer tamanho aparece com a mesma altura, sem distorcer.
     image.setScale(HAND_ITEM_HEIGHT / image.height);
@@ -257,8 +261,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     } else {
       // No pescoço do quadro atual: desce junto com o tronco na caminhada e, como a pose é
       // meio de lado, fica um pouco à frente do meio (espelhado quando olha para a esquerda).
-      const neck = neckFor(Number(this.frame.name), this.neck, BODY_NECK_FALLBACK);
-      const offset = headOffset(
+      const neck = pointForFrame(Number(this.frame.name), this.neck, BODY_NECK_FALLBACK);
+      const offset = attachmentOffset(
         neck,
         BODY_FRAME_WIDTH,
         BODY_FRAME_HEIGHT,
@@ -271,11 +275,20 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.head.setAlpha(this.alpha);
 
     const facing = this.facing;
-    const handY = this.y - this.displayHeight * HAND_HEIGHT_RATIO;
+    const frame = Number(this.frame.name);
     for (const { image, front } of this.handItems) {
-      // Mão da frente no lado para onde olha; mão de trás no outro lado.
-      const side = front ? facing : -facing;
-      image.setPosition(this.x + (side * this.displayWidth) / 2, handY);
+      // No punho do quadro atual: o item da frente na mão perto da câmera, o de trás na outra.
+      const hand = front
+        ? pointForFrame(frame, BODY_NEAR_HAND, BODY_NEAR_HAND_FALLBACK)
+        : pointForFrame(frame, BODY_FAR_HAND, BODY_FAR_HAND_FALLBACK);
+      const offset = attachmentOffset(
+        hand,
+        BODY_FRAME_WIDTH,
+        BODY_FRAME_HEIGHT,
+        this.scaleX,
+        facing,
+      );
+      image.setPosition(this.x + offset.x, this.y + offset.y);
       image.setFlipX(this.flipX);
       image.setAlpha(this.alpha);
       // Parado, a ponta vai um pouco para a frente (ângulo negativo gira para a esquerda).

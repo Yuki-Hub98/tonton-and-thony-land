@@ -1,6 +1,6 @@
 // Definição dos personagens. Tudo que muda entre Anthony e Antonela fica aqui,
 // para nenhuma cena precisar de if (personagem === 'anthony').
-import type { NeckPoint } from '../logic/bodyAnimation';
+import type { ArtPoint } from '../logic/bodyAnimation';
 import { neckPoints } from './bodySprite';
 import { TextureKeys } from './keys';
 
@@ -29,7 +29,7 @@ export interface CharacterDef {
     /** Chave do spritesheet (formato `body-<id>`). */
     texture: string;
     /** Ponto do pescoço em cada quadro, em pixels da imagem (onde a cabeça encaixa). */
-    neck: readonly NeckPoint[];
+    neck: readonly ArtPoint[];
     /** Cor da roupa do boneco desenhado enquanto o spritesheet não existe. */
     placeholderColor: number;
   };
