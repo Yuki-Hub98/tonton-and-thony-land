@@ -6,6 +6,7 @@ import {
   type SpritesheetFrames,
   type ToolSpec,
 } from '../config/assets';
+import { BACKGROUND_ASSETS } from '../config/backgrounds';
 import {
   BODY_ANIMATION_FRAMES,
   BODY_ANIMATIONS,
@@ -48,6 +49,10 @@ export class PreloadScene extends Phaser.Scene {
       } else {
         this.load.image(asset.key, asset.path);
       }
+    }
+    // Fundos das fases: sem placeholder; se faltar a imagem, a camada não aparece.
+    for (const asset of BACKGROUND_ASSETS) {
+      this.load.image(asset.key, asset.path);
     }
     for (const level of LEVELS) {
       this.load.tilemapTiledJSON(level.key, level.path);
