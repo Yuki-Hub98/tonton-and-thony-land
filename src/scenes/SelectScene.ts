@@ -1,12 +1,9 @@
 import Phaser from 'phaser';
-import { BACKGROUNDS } from '../config/backgrounds';
 import { CHARACTER_IDS, CHARACTERS, type CharacterId } from '../config/characters';
 import {
-  BACKGROUND_DEPTH,
   GAME_HEIGHT,
   SELECT_BG_FADE_MS,
   SELECT_BG_HOLD_MS,
-  SELECT_BG_SCROLL_SPEED,
   SELECT_CARD_FOCUS_SCALE,
   SELECT_CARD_GAP,
   SELECT_CARD_HEIGHT,
@@ -21,11 +18,10 @@ import { SceneKeys } from '../config/keys';
 import { LEVELS } from '../config/levels';
 import { TextStyles } from '../config/textStyles';
 import { TEXTS } from '../config/texts';
+import { BackgroundSlideshow } from '../components/BackgroundSlideshow';
 import { HeadController } from '../components/HeadController';
-import { backgroundMix } from '../logic/backgroundCycle';
 import { moveSelection } from '../logic/menuSelection';
 import { InputManager } from '../systems/InputManager';
-import { ParallaxBackground } from '../systems/ParallaxBackground';
 import { SaveManager } from '../systems/SaveManager';
 import type { ContinueData } from './ContinueScene';
 import type { GameSceneData } from './GameScene';
@@ -43,9 +39,7 @@ export class SelectScene extends Phaser.Scene {
   private selectedIndex = 0;
   private inputManager!: InputManager;
   private leaving = false;
-  private backgrounds: ParallaxBackground[] = [];
-  /** Tempo desde que a tela abriu: anda o cenário e decide qual fundo aparece. */
-  private elapsedMs = 0;
+  private background!: BackgroundSlideshow;
 
   constructor() {
     super(SceneKeys.Select);
@@ -54,14 +48,14 @@ export class SelectScene extends Phaser.Scene {
   create(): void {
     this.cards = [];
     this.leaving = false;
-    this.elapsedMs = 0;
     const centerX = this.scale.width / 2;
 
     // Os fundos das fases, na ordem das fases, se revezando atrás dos cartões.
-    this.backgrounds = LEVELS.map(
-      (level) => new ParallaxBackground(this, BACKGROUNDS[level.background]),
+    this.background = new BackgroundSlideshow(
+      this,
+      LEVELS.map((level) => level.background),
+      { holdMs: SELECT_BG_HOLD_MS, fadeMs: SELECT_BG_FADE_MS, loop: true },
     );
-    this.updateBackgrounds(0);
 
     this.add
       .text(centerX, GAME_HEIGHT * 0.13, TEXTS.chooseCharacter, TextStyles.heading)
@@ -80,7 +74,7 @@ export class SelectScene extends Phaser.Scene {
   }
 
   update(time: number, delta: number): void {
-    this.updateBackgrounds(delta);
+    this.background.update(delta);
     if (this.inputManager.justPressed('left')) {
       this.select(moveSelection(this.selectedIndex, -1, this.cards.length));
     }
@@ -90,31 +84,6 @@ export class SelectScene extends Phaser.Scene {
     if (this.inputManager.justPressed('confirm')) this.confirm();
 
     for (const card of this.cards) card.headController.update(time);
-  }
-
-  /**
-   * O cenário passa sozinho (como uma câmera andando para a direita). O fundo atual fica
-   * embaixo e o próximo aparece por cima dele, aos poucos; os outros ficam escondidos.
-   */
-  private updateBackgrounds(deltaMs: number): void {
-    this.elapsedMs += deltaMs;
-    const scrollX = this.elapsedMs * SELECT_BG_SCROLL_SPEED;
-    const mix = backgroundMix(
-      this.elapsedMs,
-      this.backgrounds.length,
-      SELECT_BG_HOLD_MS,
-      SELECT_BG_FADE_MS,
-    );
-    this.backgrounds.forEach((background, index) => {
-      background.update(deltaMs, scrollX);
-      if (index === mix.current) {
-        background.setDepthBase(BACKGROUND_DEPTH * 2).setAlpha(1);
-      } else if (index === mix.next) {
-        background.setDepthBase(BACKGROUND_DEPTH).setAlpha(mix.fade);
-      } else {
-        background.setAlpha(0);
-      }
-    });
   }
 
   private createCard(id: CharacterId, index: number, x: number, y: number): CharacterCard {

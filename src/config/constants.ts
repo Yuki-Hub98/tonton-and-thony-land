@@ -182,13 +182,16 @@ export const SELECT_HEAD_SIZE = 160;
 export const SELECT_CARD_FOCUS_SCALE = 1.08;
 export const SELECT_CARD_TWEEN_MS = 120;
 /**
- * Fundo da seleção: os fundos das fases se revezam, passando devagar como se a câmera andasse
- * sozinha. Velocidade em pixels por milissegundo (0,06 = 60 px/s), quanto tempo cada um fica
- * e quanto dura a troca.
+ * Fundos das fases atrás das telas de menu (ver BackgroundSlideshow). O cenário passa devagar,
+ * como se a câmera andasse sozinha: pixels por milissegundo (0,06 = 60 px/s).
  */
-export const SELECT_BG_SCROLL_SPEED = 0.06;
+export const MENU_BG_SCROLL_SPEED = 0.06;
+/** Seleção: os fundos das 3 fases se revezam sem parar (tempo de cada um e da troca). */
 export const SELECT_BG_HOLD_MS = 6000;
 export const SELECT_BG_FADE_MS = 1500;
+/** Fase concluída: mostra a fase que acabou e depois se transforma na próxima. */
+export const LEVEL_COMPLETE_BG_HOLD_MS = 1500;
+export const LEVEL_COMPLETE_BG_FADE_MS = 1500;
 
 /** Cores da interface. */
 export const UI_HIGHLIGHT_COLOR = 0xffec27;
