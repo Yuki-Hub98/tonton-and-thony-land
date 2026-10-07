@@ -48,3 +48,19 @@ describe('backgroundMix', () => {
     expect(backgroundMix(HOLD + 1, 3, HOLD, 0)).toEqual({ current: 1, next: 2, fade: 0 });
   });
 });
+
+describe('backgroundMix sem repetir', () => {
+  it('troca do primeiro para o segundo normalmente', () => {
+    expect(backgroundMix(HOLD + FADE / 2, 2, HOLD, FADE, false)).toEqual({
+      current: 0,
+      next: 1,
+      fade: 0.5,
+    });
+  });
+
+  it('para no último fundo e não volta ao primeiro', () => {
+    for (const time of [HOLD + FADE, 2 * HOLD + 2 * FADE, 100 * HOLD]) {
+      expect(backgroundMix(time, 2, HOLD, FADE, false)).toEqual({ current: 1, next: 1, fade: 0 });
+    }
+  });
+});
