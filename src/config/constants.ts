@@ -181,6 +181,19 @@ export const SELECT_HEAD_SIZE = 160;
 /** O cartão escolhido cresce um pouco para destacar. */
 export const SELECT_CARD_FOCUS_SCALE = 1.08;
 export const SELECT_CARD_TWEEN_MS = 120;
+/**
+ * Fundos das fases atrás das telas de menu (ver BackgroundSlideshow). O cenário passa devagar,
+ * como se a câmera andasse sozinha: pixels por milissegundo (0,06 = 60 px/s).
+ */
+export const MENU_BG_SCROLL_SPEED = 0.06;
+/** Seleção: os fundos das 3 fases se revezam sem parar (tempo de cada um e da troca). */
+export const SELECT_BG_HOLD_MS = 6000;
+export const SELECT_BG_FADE_MS = 1500;
+/** Fase concluída: mostra a fase que acabou e depois se transforma na próxima. */
+export const LEVEL_COMPLETE_BG_HOLD_MS = 1500;
+export const LEVEL_COMPLETE_BG_FADE_MS = 1500;
+/** Game over: fundo da fase em que perdeu, escurecido (0 = normal, 1 = preto). */
+export const GAME_OVER_BG_DIM = 0.4;
 
 /** Cores da interface. */
 export const UI_HIGHLIGHT_COLOR = 0xffec27;

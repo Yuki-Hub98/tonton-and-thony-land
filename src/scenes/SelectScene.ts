@@ -2,6 +2,8 @@ import Phaser from 'phaser';
 import { CHARACTER_IDS, CHARACTERS, type CharacterId } from '../config/characters';
 import {
   GAME_HEIGHT,
+  SELECT_BG_FADE_MS,
+  SELECT_BG_HOLD_MS,
   SELECT_CARD_FOCUS_SCALE,
   SELECT_CARD_GAP,
   SELECT_CARD_HEIGHT,
@@ -16,6 +18,7 @@ import { SceneKeys } from '../config/keys';
 import { LEVELS } from '../config/levels';
 import { TextStyles } from '../config/textStyles';
 import { TEXTS } from '../config/texts';
+import { BackgroundSlideshow } from '../components/BackgroundSlideshow';
 import { HeadController } from '../components/HeadController';
 import { moveSelection } from '../logic/menuSelection';
 import { InputManager } from '../systems/InputManager';
@@ -36,6 +39,7 @@ export class SelectScene extends Phaser.Scene {
   private selectedIndex = 0;
   private inputManager!: InputManager;
   private leaving = false;
+  private background!: BackgroundSlideshow;
 
   constructor() {
     super(SceneKeys.Select);
@@ -45,6 +49,13 @@ export class SelectScene extends Phaser.Scene {
     this.cards = [];
     this.leaving = false;
     const centerX = this.scale.width / 2;
+
+    // Os fundos das fases, na ordem das fases, se revezando atrás dos cartões.
+    this.background = new BackgroundSlideshow(
+      this,
+      LEVELS.map((level) => level.background),
+      { holdMs: SELECT_BG_HOLD_MS, fadeMs: SELECT_BG_FADE_MS, loop: true },
+    );
 
     this.add
       .text(centerX, GAME_HEIGHT * 0.13, TEXTS.chooseCharacter, TextStyles.heading)
@@ -62,7 +73,8 @@ export class SelectScene extends Phaser.Scene {
     this.select(0);
   }
 
-  update(time: number): void {
+  update(time: number, delta: number): void {
+    this.background.update(delta);
     if (this.inputManager.justPressed('left')) {
       this.select(moveSelection(this.selectedIndex, -1, this.cards.length));
     }

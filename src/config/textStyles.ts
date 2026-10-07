@@ -40,5 +40,8 @@ export const TextStyles = {
     fontFamily: FONT_FAMILY,
     fontSize: '20px',
     color: '#c2c3c7',
+    // Contorno fino: continua legível em cima dos fundos coloridos.
+    stroke: '#000000',
+    strokeThickness: 4,
   },
 } satisfies Record<string, TextStyle>;
