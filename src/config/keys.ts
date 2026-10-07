@@ -14,7 +14,6 @@ export const SceneKeys = {
 } as const;
 
 export const TextureKeys = {
-  Body: 'body',
   Flag: 'flag',
   Tileset: 'tileset',
   Enemy: 'enemy',

@@ -1,5 +1,17 @@
 import { describe, expect, it } from 'vitest';
-import { CHARACTER_IDS, CHARACTERS, DEFAULT_CHARACTER_ID, headTextureKey } from './characters';
+import {
+  BODY_ANIMATION_FRAMES,
+  BODY_FRAME_COUNT,
+  BODY_FRAME_HEIGHT,
+  BODY_FRAME_WIDTH,
+} from './bodySprite';
+import {
+  bodyTextureKey,
+  CHARACTER_IDS,
+  CHARACTERS,
+  DEFAULT_CHARACTER_ID,
+  headTextureKey,
+} from './characters';
 
 describe('CHARACTERS', () => {
   it.each(CHARACTER_IDS)('%s tem id igual à chave do registro', (id) => {
@@ -31,6 +43,31 @@ describe('CHARACTERS', () => {
     const { equipment } = CHARACTERS[id];
     expect(equipment.name.trim()).not.toBe('');
     expect(equipment.textures.length).toBeGreaterThan(0);
+  });
+
+  it.each(CHARACTER_IDS)('%s tem corpo animado no padrão body-<id>', (id) => {
+    expect(CHARACTERS[id].body.texture).toBe(bodyTextureKey(id));
+  });
+
+  it.each(CHARACTER_IDS)('%s tem o pescoço de cada quadro dentro do quadro', (id) => {
+    const { neck } = CHARACTERS[id].body;
+    expect(neck).toHaveLength(BODY_FRAME_COUNT);
+    for (const { x, y } of neck) {
+      expect(x).toBeGreaterThanOrEqual(0);
+      expect(x).toBeLessThanOrEqual(BODY_FRAME_WIDTH);
+      expect(y).toBeGreaterThanOrEqual(0);
+      expect(y).toBeLessThan(BODY_FRAME_HEIGHT);
+    }
+  });
+
+  it('as animações só usam quadros que existem no spritesheet', () => {
+    for (const frames of Object.values(BODY_ANIMATION_FRAMES)) {
+      expect(frames.length).toBeGreaterThan(0);
+      for (const frame of frames) {
+        expect(frame).toBeGreaterThanOrEqual(0);
+        expect(frame).toBeLessThan(BODY_FRAME_COUNT);
+      }
+    }
   });
 
   it('não repete foto entre personagens', () => {

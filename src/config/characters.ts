@@ -1,5 +1,7 @@
 // Definição dos personagens. Tudo que muda entre Anthony e Antonela fica aqui,
 // para nenhuma cena precisar de if (personagem === 'anthony').
+import type { NeckPoint } from '../logic/bodyAnimation';
+import { neckPoints } from './bodySprite';
 import { TextureKeys } from './keys';
 
 export type CharacterId = 'anthony' | 'antonela';
@@ -22,6 +24,15 @@ export interface CharacterDef {
    * as outras, na mão de trás.
    */
   equipment: { name: string; textures: string[] };
+  /** Corpo animado (spritesheet no formato de bodySprite.ts). */
+  body: {
+    /** Chave do spritesheet (formato `body-<id>`). */
+    texture: string;
+    /** Ponto do pescoço em cada quadro, em pixels da imagem (onde a cabeça encaixa). */
+    neck: readonly NeckPoint[];
+    /** Cor da roupa do boneco desenhado enquanto o spritesheet não existe. */
+    placeholderColor: number;
+  };
   /** Cor da cabeça desenhada enquanto as fotos não existem. */
   placeholderColor: number;
 }
@@ -36,6 +47,12 @@ export const CHARACTERS: Record<CharacterId, CharacterDef> = {
       happy: 'anthony-happy',
     },
     equipment: { name: 'Vassoura e pá', textures: [TextureKeys.Broom, TextureKeys.Shovel] },
+    // Macacão vermelho, como na arte da abertura.
+    body: {
+      texture: bodyTextureKey('anthony'),
+      neck: neckPoints(102.9),
+      placeholderColor: 0xff004d,
+    },
     placeholderColor: 0xffa300,
   },
   antonela: {
@@ -47,6 +64,12 @@ export const CHARACTERS: Record<CharacterId, CharacterDef> = {
       happy: 'antonela-happy',
     },
     equipment: { name: 'Vassoura', textures: [TextureKeys.Broom] },
+    // Vestido rosa, como na arte da abertura.
+    body: {
+      texture: bodyTextureKey('antonela'),
+      neck: neckPoints(103.8),
+      placeholderColor: 0xff77a8,
+    },
     placeholderColor: 0xff77a8,
   },
 };
@@ -62,4 +85,13 @@ export function headTextureKey(id: CharacterId, pose: HeadPose): string {
 
 export function headAssetPath(id: CharacterId, pose: HeadPose): string {
   return `assets/characters/${id}/${pose}.png`;
+}
+
+export function bodyTextureKey(id: CharacterId): string {
+  return `body-${id}`;
+}
+
+/** Spritesheet do corpo, na pasta do personagem ("3q" = pose três-quartos, meio de lado). */
+export function bodyAssetPath(id: CharacterId): string {
+  return `assets/characters/${id}/body-${id}-3q-sheet.png`;
 }

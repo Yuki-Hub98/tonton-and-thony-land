@@ -1,8 +1,18 @@
 import Phaser from 'phaser';
+import {
+  BODY_FRAME_HEIGHT,
+  BODY_FRAME_WIDTH,
+  BODY_NECK_FALLBACK,
+  bodyAnimationKey,
+} from '../config/bodySprite';
 import type { CharacterDef } from '../config/characters';
 import {
-  CAR_HEAD_OFFSET_X,
-  CAR_HEAD_OVERLAP_Y,
+  BODY_HITBOX_HEIGHT,
+  BODY_HITBOX_WIDTH,
+  BODY_SCALE,
+  BODY_WALK_MIN_SPEED,
+  CAR_HEAD_ANCHOR_X,
+  CAR_HEAD_ANCHOR_Y,
   CAR_SPEED,
   DEATH_JUMP_VELOCITY,
   HAND_HEIGHT_RATIO,
@@ -19,6 +29,13 @@ import {
 import { TextureKeys } from '../config/keys';
 import { HeadController } from '../components/HeadController';
 import { shouldAutoJump } from '../logic/autoDrive';
+import {
+  chooseBodyAnimation,
+  headOffset,
+  neckFor,
+  type BodyAnimation,
+  type NeckPoint,
+} from '../logic/bodyAnimation';
 import type { Direction } from '../logic/enemyPatrol';
 import { canJump, cutJumpVelocity, horizontalVelocity } from '../logic/movement';
 import type { Point } from '../logic/respawnPoint';
@@ -31,8 +48,9 @@ interface HandItem {
 }
 
 /**
- * Jogador: o sprite do corpo tem a física (o hitbox é só o corpo).
- * A cabeça e os itens na mão são imagens separadas que seguem o corpo a cada frame.
+ * Jogador: o sprite do corpo tem a física (o hitbox é só o tronco) e as animações
+ * (parado, andando, pulando). A cabeça e os itens na mão são imagens separadas que
+ * seguem o corpo a cada frame; a cabeça acompanha o pescoço, que sobe e desce ao andar.
  * Ao pegar o carro, o mesmo sprite troca de textura e vira o carrinho, com a cabeça dentro.
  */
 export class Player extends Phaser.Physics.Arcade.Sprite {
@@ -41,11 +59,16 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   private readonly head: Phaser.GameObjects.Image;
   private readonly headController: HeadController;
   private readonly handItems: HandItem[];
+  private readonly bodyTexture: string;
+  private readonly neck: readonly NeckPoint[];
   private swinging = false;
   private inCar = false;
 
   constructor(scene: Phaser.Scene, x: number, y: number, character: CharacterDef) {
-    super(scene, x, y, TextureKeys.Body);
+    // Começa no quadro 0 do spritesheet (parado).
+    super(scene, x, y, character.body.texture, 0);
+    this.bodyTexture = character.body.texture;
+    this.neck = character.body.neck;
 
     // Quem é adicionado antes é desenhado antes (fica atrás): item de trás, corpo, cabeça, item da frente.
     const [frontTexture, ...backTextures] = character.equipment.textures;
@@ -56,10 +79,15 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     // Origem nos pés: facilita posicionar o jogador em cima de um bloco.
     this.setOrigin(0.5, 1);
     this.setCollideWorldBounds(true);
+    // A arte é feita em 4×; na fase aparece em 1/4.
+    this.setScale(BODY_SCALE);
+    // Hitbox só no tronco: os braços abertos não encostam em nada. O tamanho é em pixels da
+    // imagem (o Phaser multiplica pela escala); centralizado na largura e com os pés embaixo.
+    this.body.setSize(BODY_HITBOX_WIDTH / BODY_SCALE, BODY_HITBOX_HEIGHT / BODY_SCALE);
 
-    // Origem da cabeça no queixo, para encaixar no topo do corpo.
+    // Origem da cabeça no queixo, para encaixar no pescoço.
     this.head = scene.add
-      .image(x, y, character.heads.idle[0] ?? TextureKeys.Body)
+      .image(x, y, character.heads.idle[0] ?? character.body.texture)
       .setOrigin(0.5, 1);
     this.headController = new HeadController(this.head, character.heads, scene.time.now);
 
@@ -96,6 +124,10 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     }
     this.setVelocityY(
       cutJumpVelocity(this.body.velocity.y, input.justReleased('jump'), JUMP_CUT_FACTOR),
+    );
+
+    this.playBodyAnimation(
+      chooseBodyAnimation({ onGround, velocityX, minWalkSpeed: BODY_WALK_MIN_SPEED }),
     );
   }
 
@@ -138,6 +170,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.setItemsVisible(false);
     this.setAlpha(1);
     this.setFlipX(false);
+    // Para a animação do corpo antes de trocar a textura; o carro tem um quadro só.
+    this.anims.stop();
     this.setTexture(TextureKeys.Car);
     // Sem argumentos, o hitbox passa a ter o tamanho da nova textura (o carro é mais largo e baixo).
     this.body.setSize();
@@ -176,6 +210,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
    */
   die(fell: boolean, now: number): void {
     this.headController.notify('died', now);
+    this.playBodyAnimation('jump');
     this.setItemsVisible(false);
     this.setAlpha(1);
     // Sem colisão: atravessa o chão e não encosta mais em inimigos nem na bandeira.
@@ -189,6 +224,11 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.body.checkCollision.none = false;
     this.body.reset(point.x, point.y);
     this.headController.notify('respawned', now);
+  }
+
+  /** Toca a animação do corpo; se já estiver tocando, continua de onde estava. */
+  private playBodyAnimation(animation: BodyAnimation): void {
+    this.anims.play(bodyAnimationKey(this.bodyTexture, animation), true);
   }
 
   private createHandItem(texture: string, front: boolean): HandItem {
@@ -207,10 +247,26 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   }
 
   private syncAttachments(): void {
-    // No carro, a cabeça afunda no banco do motorista, um pouco para trás.
-    const headOverlap = this.inCar ? CAR_HEAD_OVERLAP_Y : HEAD_OVERLAP_Y;
-    const headOffsetX = this.inCar ? CAR_HEAD_OFFSET_X : 0;
-    this.head.setPosition(this.x + headOffsetX, this.y - this.displayHeight + headOverlap);
+    const top = this.y - this.displayHeight;
+    if (this.inCar) {
+      // No banco do motorista: ponto marcado na imagem do carro, convertido para a escala da fase.
+      this.head.setPosition(
+        this.x + (CAR_HEAD_ANCHOR_X - this.width / 2) * this.scaleX,
+        top + CAR_HEAD_ANCHOR_Y * this.scaleY,
+      );
+    } else {
+      // No pescoço do quadro atual: desce junto com o tronco na caminhada e, como a pose é
+      // meio de lado, fica um pouco à frente do meio (espelhado quando olha para a esquerda).
+      const neck = neckFor(Number(this.frame.name), this.neck, BODY_NECK_FALLBACK);
+      const offset = headOffset(
+        neck,
+        BODY_FRAME_WIDTH,
+        BODY_FRAME_HEIGHT,
+        this.scaleX,
+        this.facing,
+      );
+      this.head.setPosition(this.x + offset.x, this.y + offset.y + HEAD_OVERLAP_Y);
+    }
     this.head.setFlipX(this.flipX);
     this.head.setAlpha(this.alpha);
 

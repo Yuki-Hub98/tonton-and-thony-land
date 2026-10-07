@@ -1,4 +1,7 @@
+import type { NeckPoint } from '../logic/bodyAnimation';
+import { BODY_FRAME_COUNT, BODY_FRAME_HEIGHT, BODY_FRAME_WIDTH } from './bodySprite';
 import {
+  bodyAssetPath,
   CHARACTER_IDS,
   CHARACTERS,
   HEAD_POSES,
@@ -29,6 +32,18 @@ export interface PlaceholderSpec {
   tool?: ToolSpec;
   /** Se definido, desenha um carrinho visto de lado (lataria em color) com rodas desta cor. */
   vehicle?: { wheelColor: number };
+  /**
+   * Se definido, desenha um boneco sem cabeça (roupa em color) em cada quadro do spritesheet,
+   * mexendo braços e pernas, com o tronco descendo conforme o pescoço.
+   */
+  figure?: { neck: readonly NeckPoint[] };
+}
+
+/** Imagem dividida em quadros iguais lado a lado (spritesheet), para animação. */
+export interface SpritesheetFrames {
+  frameWidth: number;
+  frameHeight: number;
+  count: number;
 }
 
 export interface ToolSpec {
@@ -45,14 +60,11 @@ export interface ImageAsset {
    */
   path: string;
   placeholder: PlaceholderSpec;
+  /** Se definido, a imagem é um spritesheet com estes quadros. */
+  frames?: SpritesheetFrames;
 }
 
 const SPRITE_ASSETS: readonly ImageAsset[] = [
-  {
-    key: TextureKeys.Body,
-    path: 'assets/sprites/body.png',
-    placeholder: { width: 32, height: 40, color: 0x29adff },
-  },
   {
     key: TextureKeys.Flag,
     path: 'assets/sprites/flag.png',
@@ -104,8 +116,9 @@ const SPRITE_ASSETS: readonly ImageAsset[] = [
   {
     key: TextureKeys.Car,
     path: 'assets/sprites/car.png',
-    // Visto de lado, de frente para a direita. A cabeça do personagem aparece por cima, na parte de trás.
-    placeholder: { width: 56, height: 32, color: 0xff004d, vehicle: { wheelColor: 0x1d2b53 } },
+    // Visto de lado, de frente para a direita, em 4× (aparece com BODY_SCALE).
+    // A cabeça do personagem entra no banco do motorista (CAR_HEAD_ANCHOR_X/Y).
+    placeholder: { width: 224, height: 128, color: 0xff004d, vehicle: { wheelColor: 0x1d2b53 } },
   },
   {
     // Tela de abertura (a arte já traz o nome do jogo). Qualquer tamanho: cobre a tela sem distorcer.
@@ -148,4 +161,28 @@ const HEAD_ASSETS: readonly ImageAsset[] = CHARACTER_IDS.flatMap((id) =>
   })),
 );
 
-export const IMAGE_ASSETS: readonly ImageAsset[] = [...SPRITE_ASSETS, ...HEAD_ASSETS];
+/** Corpo animado de cada personagem: 10 quadros de 176×160 lado a lado. */
+const BODY_ASSETS: readonly ImageAsset[] = CHARACTER_IDS.map((id) => {
+  const { body } = CHARACTERS[id];
+  return {
+    key: body.texture,
+    path: bodyAssetPath(id),
+    frames: {
+      frameWidth: BODY_FRAME_WIDTH,
+      frameHeight: BODY_FRAME_HEIGHT,
+      count: BODY_FRAME_COUNT,
+    },
+    placeholder: {
+      width: BODY_FRAME_WIDTH * BODY_FRAME_COUNT,
+      height: BODY_FRAME_HEIGHT,
+      color: body.placeholderColor,
+      figure: { neck: body.neck },
+    },
+  };
+});
+
+export const IMAGE_ASSETS: readonly ImageAsset[] = [
+  ...SPRITE_ASSETS,
+  ...BODY_ASSETS,
+  ...HEAD_ASSETS,
+];
