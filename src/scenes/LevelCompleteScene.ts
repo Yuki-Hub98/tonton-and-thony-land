@@ -1,10 +1,13 @@
 import Phaser from 'phaser';
+import { BackgroundSlideshow } from '../components/BackgroundSlideshow';
 import { BlinkingPrompt } from '../components/BlinkingPrompt';
 import { CHARACTERS, type CharacterId } from '../config/characters';
 import {
   CELEBRATE_HOP_HEIGHT,
   CELEBRATE_HOP_MS,
   GAME_HEIGHT,
+  LEVEL_COMPLETE_BG_FADE_MS,
+  LEVEL_COMPLETE_BG_HOLD_MS,
   SELECT_HEAD_SIZE,
 } from '../config/constants';
 import { SceneKeys } from '../config/keys';
@@ -32,6 +35,7 @@ export class LevelCompleteScene extends Phaser.Scene {
   private completed!: LevelCompleteData;
   private inputManager!: InputManager;
   private leaving = false;
+  private background!: BackgroundSlideshow;
 
   constructor() {
     super(SceneKeys.LevelComplete);
@@ -47,6 +51,18 @@ export class LevelCompleteScene extends Phaser.Scene {
     const centerX = this.scale.width / 2;
     const character = CHARACTERS[this.completed.characterId];
     const levelName = LEVELS[this.completed.levelIndex]?.name ?? '';
+
+    // Fundo da fase que acabou, que depois se transforma no da próxima (uma prévia).
+    // Depois da última, fica o fundo dela.
+    const next = nextLevelIndex(this.completed.levelIndex, LEVELS.length);
+    const backgrounds = [this.completed.levelIndex, next ?? this.completed.levelIndex]
+      .map((index) => LEVELS[index]?.background)
+      .filter((id) => id !== undefined);
+    this.background = new BackgroundSlideshow(this, backgrounds, {
+      holdMs: LEVEL_COMPLETE_BG_HOLD_MS,
+      fadeMs: LEVEL_COMPLETE_BG_FADE_MS,
+      loop: false,
+    });
 
     this.add
       .text(centerX, GAME_HEIGHT * 0.15, TEXTS.levelComplete(levelName), TextStyles.heading)
@@ -71,7 +87,8 @@ export class LevelCompleteScene extends Phaser.Scene {
     this.input.once(Phaser.Input.Events.POINTER_DOWN, () => this.continue());
   }
 
-  update(): void {
+  update(_time: number, delta: number): void {
+    this.background.update(delta);
     if (this.inputManager.justPressed('confirm')) this.continue();
   }
 
