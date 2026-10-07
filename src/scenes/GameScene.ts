@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { BACKGROUNDS } from '../config/backgrounds';
 import {
   CHARACTERS,
   DEFAULT_CHARACTER_ID,
@@ -38,6 +39,7 @@ import { furthestRespawnPoint, type Point } from '../logic/respawnPoint';
 import { CameraController } from '../systems/CameraController';
 import { InputManager } from '../systems/InputManager';
 import { LevelLoader } from '../systems/LevelLoader';
+import { ParallaxBackground } from '../systems/ParallaxBackground';
 import type { GameOverData } from './GameOverScene';
 import type { HUDData } from './HUDScene';
 import type { LevelCompleteData } from './LevelCompleteScene';
@@ -62,6 +64,7 @@ export class GameScene extends Phaser.Scene {
   private carPickups!: Phaser.Physics.Arcade.StaticGroup;
   private inputManager!: InputManager;
   private cameraController!: CameraController;
+  private background?: ParallaxBackground;
   private state!: PlayerStateMachine;
   private lives!: LivesCounter;
   private respawnPoint!: Point;
@@ -78,12 +81,16 @@ export class GameScene extends Phaser.Scene {
     this.lives = new LivesCounter(data.lives ?? STARTING_LIVES);
     this.state = new PlayerStateMachine(INVINCIBLE_MS);
     this.player = undefined;
+    this.background = undefined;
     this.lastAttackAt = Number.NEGATIVE_INFINITY;
   }
 
   create(): void {
     const levelDef = LEVELS[this.levelIndex];
     if (!levelDef) throw new Error(`Fase ${this.levelIndex} não existe em LEVELS.`);
+
+    // Fundo com parallax: fica preso na tela, com depth negativo, atrás do mapa e do jogador.
+    this.background = new ParallaxBackground(this, BACKGROUNDS[levelDef.background]);
 
     let loaded;
     try {
@@ -162,7 +169,9 @@ export class GameScene extends Phaser.Scene {
   }
 
   /** Roda a cada frame (o "game loop"). */
-  update(time: number): void {
+  update(time: number, delta: number): void {
+    // O fundo anda até com o jogo parado (as nuvens têm vento).
+    this.background?.update(delta);
     const player = this.player;
     if (!player) return;
     player.updateHead(time);
