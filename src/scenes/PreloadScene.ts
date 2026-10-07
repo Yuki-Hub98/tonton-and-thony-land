@@ -22,7 +22,7 @@ import {
 } from '../config/constants';
 import { RegistryKeys, SceneKeys } from '../config/keys';
 import { LEVELS } from '../config/levels';
-import { neckFor, type NeckPoint } from '../logic/bodyAnimation';
+import { pointForFrame, type ArtPoint } from '../logic/bodyAnimation';
 
 /**
  * Carrega todos os assets mostrando uma barra de progresso.
@@ -157,14 +157,14 @@ export class PreloadScene extends Phaser.Scene {
     graphics: Phaser.GameObjects.Graphics,
     { frameWidth, frameHeight, count }: SpritesheetFrames,
     clothesColor: number,
-    neckPoints: readonly NeckPoint[],
+    neckPoints: readonly ArtPoint[],
   ): void {
     const walk = BODY_ANIMATION_FRAMES.walk;
     const jump = BODY_ANIMATION_FRAMES.jump;
     const unit = frameHeight / 160; // medidas abaixo pensadas para um quadro de 160 de altura
 
     for (let frame = 0; frame < count; frame++) {
-      const neckPoint = neckFor(frame, neckPoints, BODY_NECK_FALLBACK);
+      const neckPoint = pointForFrame(frame, neckPoints, BODY_NECK_FALLBACK);
       const centerX = frame * frameWidth + neckPoint.x;
       const neck = neckPoint.y;
       let leftLift = 0;

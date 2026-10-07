@@ -1,4 +1,4 @@
-import type { NeckPoint } from '../logic/bodyAnimation';
+import type { ArtPoint } from '../logic/bodyAnimation';
 import { BODY_FRAME_COUNT, BODY_FRAME_HEIGHT, BODY_FRAME_WIDTH } from './bodySprite';
 import {
   bodyAssetPath,
@@ -36,7 +36,7 @@ export interface PlaceholderSpec {
    * Se definido, desenha um boneco sem cabeça (roupa em color) em cada quadro do spritesheet,
    * mexendo braços e pernas, com o tronco descendo conforme o pescoço.
    */
-  figure?: { neck: readonly NeckPoint[] };
+  figure?: { neck: readonly ArtPoint[] };
 }
 
 /** Imagem dividida em quadros iguais lado a lado (spritesheet), para animação. */

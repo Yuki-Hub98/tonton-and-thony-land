@@ -16,11 +16,14 @@ export class Pickup extends Phaser.Physics.Arcade.Image {
 
   private collected = false;
 
-  constructor(scene: Phaser.Scene, area: LevelObject, texture: string) {
+  /** displayHeight: altura na tela; a arte pode ter qualquer tamanho, sem distorcer. */
+  constructor(scene: Phaser.Scene, area: LevelObject, texture: string, displayHeight: number) {
     const feet = bottomCenter(area);
     super(scene, feet.x, feet.y, texture);
     scene.add.existing(this);
     this.setOrigin(0.5, 1);
+    // Antes da física: o corpo estático é criado com o tamanho já na escala.
+    this.setScale(displayHeight / this.height);
     // Corpo estático: não cai, só detecta quem encosta. O balanço é só visual (o corpo fica parado).
     scene.physics.add.existing(this, true);
 
