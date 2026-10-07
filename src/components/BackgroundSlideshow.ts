@@ -13,10 +13,15 @@ export interface SlideshowTiming {
   loop: boolean;
 }
 
+/** Um fundo só, sem troca. */
+const SINGLE: SlideshowTiming = { holdMs: 0, fadeMs: 0, loop: false };
+
 /**
  * Fundos das fases atrás de uma tela de menu. O cenário passa sozinho, como uma câmera
  * andando para a direita, e os fundos se revezam: o atual fica embaixo e o próximo aparece
  * por cima dele, aos poucos; os outros ficam escondidos.
+ *
+ * Com um fundo só, ele só passa, sem troca (timing pode ser omitido).
  *
  * Uso: criar no create(), antes dos textos, e chamar update(delta) a cada frame.
  */
@@ -27,7 +32,7 @@ export class BackgroundSlideshow {
   constructor(
     scene: Phaser.Scene,
     ids: readonly BackgroundId[],
-    private readonly timing: SlideshowTiming,
+    private readonly timing: SlideshowTiming = SINGLE,
   ) {
     this.backgrounds = ids.map((id) => new ParallaxBackground(scene, BACKGROUNDS[id]));
     this.update(0);
