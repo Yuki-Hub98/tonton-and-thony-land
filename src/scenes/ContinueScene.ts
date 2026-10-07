@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { BackgroundSlideshow } from '../components/BackgroundSlideshow';
 import { MenuButtons } from '../components/MenuButtons';
 import { CHARACTERS, type CharacterId } from '../config/characters';
 import { GAME_HEIGHT, SELECT_HEAD_SIZE } from '../config/constants';
@@ -22,6 +23,7 @@ export class ContinueScene extends Phaser.Scene {
   private menu!: MenuButtons;
   private inputManager!: InputManager;
   private leaving = false;
+  private background?: BackgroundSlideshow;
 
   constructor() {
     super(SceneKeys.Continue);
@@ -35,7 +37,11 @@ export class ContinueScene extends Phaser.Scene {
   create(): void {
     const centerX = this.scale.width / 2;
     const character = CHARACTERS[this.saved.characterId];
-    const levelName = LEVELS[this.saved.levelIndex]?.name ?? '';
+    const level = LEVELS[this.saved.levelIndex];
+    const levelName = level?.name ?? '';
+
+    // Fundo da fase de onde dá para continuar: o lugar para onde a criança vai voltar.
+    this.background = level ? new BackgroundSlideshow(this, [level.background]) : undefined;
 
     this.add
       .text(centerX, GAME_HEIGHT * 0.13, TEXTS.continueQuestion, TextStyles.heading)
@@ -58,7 +64,8 @@ export class ContinueScene extends Phaser.Scene {
     this.inputManager = new InputManager(this);
   }
 
-  update(): void {
+  update(_time: number, delta: number): void {
+    this.background?.update(delta);
     this.menu.update(this.inputManager);
   }
 

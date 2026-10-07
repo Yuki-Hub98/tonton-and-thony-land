@@ -194,6 +194,9 @@ export const LEVEL_COMPLETE_BG_HOLD_MS = 1500;
 export const LEVEL_COMPLETE_BG_FADE_MS = 1500;
 /** Game over: fundo da fase em que perdeu, escurecido (0 = normal, 1 = preto). */
 export const GAME_OVER_BG_DIM = 0.4;
+/** Vitória: as 3 fases se revezam, como uma retrospectiva (tempo de cada uma e da troca). */
+export const VICTORY_BG_HOLD_MS = 4000;
+export const VICTORY_BG_FADE_MS = 1500;
 
 /** Cores da interface. */
 export const UI_HIGHLIGHT_COLOR = 0xffec27;

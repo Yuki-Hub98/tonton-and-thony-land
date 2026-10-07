@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { BackgroundSlideshow } from '../components/BackgroundSlideshow';
 import { BlinkingPrompt } from '../components/BlinkingPrompt';
 import { CHARACTERS, type CharacterId } from '../config/characters';
 import {
@@ -9,9 +10,12 @@ import {
   CONFETTI_FALL_MS,
   CONFETTI_SIZE,
   GAME_HEIGHT,
+  VICTORY_BG_FADE_MS,
+  VICTORY_BG_HOLD_MS,
   VICTORY_HEAD_SIZE,
 } from '../config/constants';
 import { SceneKeys } from '../config/keys';
+import { LEVELS } from '../config/levels';
 import { TextStyles } from '../config/textStyles';
 import { TEXTS } from '../config/texts';
 import { InputManager } from '../systems/InputManager';
@@ -25,6 +29,7 @@ export class VictoryScene extends Phaser.Scene {
   private victory!: VictoryData;
   private inputManager!: InputManager;
   private leaving = false;
+  private background!: BackgroundSlideshow;
 
   constructor() {
     super(SceneKeys.Victory);
@@ -39,6 +44,12 @@ export class VictoryScene extends Phaser.Scene {
     const centerX = this.scale.width / 2;
     const character = CHARACTERS[this.victory.characterId];
 
+    // As 3 fases se revezando atrás do confete: uma retrospectiva do que a criança zerou.
+    this.background = new BackgroundSlideshow(
+      this,
+      LEVELS.map((level) => level.background),
+      { holdMs: VICTORY_BG_HOLD_MS, fadeMs: VICTORY_BG_FADE_MS, loop: true },
+    );
     this.createConfetti();
 
     this.add.text(centerX, GAME_HEIGHT * 0.15, TEXTS.victory, TextStyles.title).setOrigin(0.5);
@@ -60,7 +71,8 @@ export class VictoryScene extends Phaser.Scene {
     this.input.once(Phaser.Input.Events.POINTER_DOWN, () => this.backToTitle());
   }
 
-  update(): void {
+  update(_time: number, delta: number): void {
+    this.background.update(delta);
     if (this.inputManager.justPressed('confirm')) this.backToTitle();
   }
 
