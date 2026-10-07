@@ -11,6 +11,16 @@ export const GAME_MAX_WIDTH = 1280;
 
 export const BACKGROUND_COLOR = '#1d2b53';
 
+/** Altura das imagens de fundo das fases (public/assets/bg/). O sol/lua usa a mesma escala. */
+export const BACKGROUND_TEXTURE_HEIGHT = 900;
+
+/**
+ * Profundidade (depth) do fundo: quem tem depth menor é desenhado antes, por baixo.
+ * Cada camada usa BACKGROUND_DEPTH + 2 × posição (céu -100, nuvens -98, colinas -96, frente -94),
+ * e o sol/lua fica em -99, entre o céu e as nuvens. Mapa, jogador e inimigos ficam no 0.
+ */
+export const BACKGROUND_DEPTH = -100;
+
 /** Gravidade da física arcade, em pixels por segundo². */
 export const GRAVITY_Y = 1200;
 
