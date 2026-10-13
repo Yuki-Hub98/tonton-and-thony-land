@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { canJump, cutJumpVelocity, horizontalVelocity, shouldCutJump } from './movement';
+import {
+  canJump,
+  cutJumpVelocity,
+  horizontalVelocity,
+  jumpHeight,
+  shouldCutJump,
+} from './movement';
 
 describe('horizontalVelocity', () => {
   it('fica parado sem input', () => {
@@ -58,5 +64,15 @@ describe('shouldCutJump', () => {
 
   it('sem soltar nada, não corta', () => {
     expect(shouldCutJump({ keyboard: false, touch: false })).toBe(false);
+  });
+});
+
+describe('jumpHeight', () => {
+  it('é velocidade² / (2 × gravidade)', () => {
+    expect(jumpHeight(-600, 1200)).toBe(150);
+  });
+
+  it('não depende do sinal da velocidade', () => {
+    expect(jumpHeight(600, 1200)).toBe(jumpHeight(-600, 1200));
   });
 });

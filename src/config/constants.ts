@@ -40,8 +40,11 @@ export const TILE_SIZE = 32;
 
 /** Velocidade horizontal do jogador, em pixels por segundo. */
 export const PLAYER_SPEED = 220;
-/** Impulso do pulo (negativo = para cima), em pixels por segundo. */
-export const PLAYER_JUMP_VELOCITY = -620;
+/**
+ * Impulso do pulo (negativo = para cima), em pixels por segundo. Altura do pulo cheio =
+ * velocidade² / (2 × GRAVITY_Y): com -720, uns 216 px (quase 7 blocos).
+ */
+export const PLAYER_JUMP_VELOCITY = -720;
 /** Ao soltar o pulo ainda subindo, a velocidade é multiplicada por isto (pulo baixo). */
 export const JUMP_CUT_FACTOR = 0.45;
 
@@ -102,6 +105,11 @@ export const HAND_ITEM_SWING_MS = 90;
 
 /** Carrinho: velocidade da direção automática até a bandeira. */
 export const CAR_SPEED = 260;
+/**
+ * Pulo automático do carro (separado do pulo do jogador): as fases 2 e 3 foram validadas com
+ * este valor no make_levels.py, e a plataforma alta da fase 3 conta com ele.
+ */
+export const CAR_JUMP_VELOCITY = -620;
 /**
  * Onde fica a base da cabeça dentro do carro, em pixels da imagem car.png (224×128):
  * no banco do motorista, atrás do para-brisa.
