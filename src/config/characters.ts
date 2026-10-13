@@ -82,7 +82,9 @@ export const CHARACTERS: Record<CharacterId, CharacterDef> = {
     // Vestido rosa, como na arte da abertura.
     body: {
       texture: bodyTextureKey('antonela'),
-      neck: neckPoints(103.8),
+      // No meio do tronco (x ≈ 91,5 na arte), não à frente como na pose meio de lado: o cabelo
+      // comprido desce dos dois lados do corpo e mostraria a cabeça torta.
+      neck: neckPoints(91.5),
       placeholderColor: 0xff77a8,
     },
     placeholderColor: 0xff77a8,
