@@ -182,6 +182,13 @@ export const PROMPT_BLINK_MS = 700;
 export const SELECT_CARD_WIDTH = 260;
 export const SELECT_CARD_HEIGHT = 340;
 export const SELECT_CARD_GAP = 80;
+/** Cantos arredondados do cartão e transparência (deixa ver um pouco o cenário atrás). */
+export const SELECT_CARD_RADIUS = 28;
+export const SELECT_CARD_ALPHA = 0.85;
+/** Borda do cartão: escolhido (grossa, amarela) e não escolhido (fina, branca). */
+export const SELECT_CARD_BORDER = 6;
+export const SELECT_CARD_BORDER_DIM = 3;
+export const SELECT_CARD_BORDER_DIM_ALPHA = 0.8;
 export const SELECT_HEAD_SIZE = 160;
 /** Altura máxima da foto inteira no cartão (a foto com cabelo comprido diminui para caber). */
 export const SELECT_HEAD_MAX_HEIGHT = 250;
@@ -212,5 +219,6 @@ export const VICTORY_BG_FADE_MS = 1500;
 
 /** Cores da interface. */
 export const UI_HIGHLIGHT_COLOR = 0xffec27;
+export const UI_LIGHT_COLOR = 0xffffff;
 export const UI_DIM_COLOR = 0x5f6b99;
 export const UI_CARD_COLOR = 0x29366f;

@@ -46,6 +46,8 @@ export interface CharacterDef {
   };
   /** Cor da cabeça desenhada enquanto as fotos não existem. */
   placeholderColor: number;
+  /** Cor do cartão na tela de seleção (combina com a roupa). */
+  cardColor: number;
 }
 
 export const CHARACTERS: Record<CharacterId, CharacterDef> = {
@@ -66,6 +68,8 @@ export const CHARACTERS: Record<CharacterId, CharacterDef> = {
       placeholderColor: 0xff004d,
     },
     placeholderColor: 0xffa300,
+    // Vermelho do macacão, um pouco mais escuro para o nome branco aparecer bem.
+    cardColor: 0xc81e3c,
   },
   antonela: {
     id: 'antonela',
@@ -88,6 +92,8 @@ export const CHARACTERS: Record<CharacterId, CharacterDef> = {
       placeholderColor: 0xff77a8,
     },
     placeholderColor: 0xff77a8,
+    // Rosa do vestido, um pouco mais escuro para o nome branco aparecer bem.
+    cardColor: 0xd9488f,
   },
 };
 

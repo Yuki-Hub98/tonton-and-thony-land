@@ -35,6 +35,9 @@ export const TextStyles = {
     fontSize: '32px',
     fontStyle: 'bold',
     color: '#ffffff',
+    // Contorno: o nome continua legível em cima do cartão colorido.
+    stroke: '#000000',
+    strokeThickness: 5,
   },
   hint: {
     fontFamily: FONT_FAMILY,

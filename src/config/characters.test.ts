@@ -90,6 +90,18 @@ describe('CHARACTERS', () => {
     expect(new Set(all).size).toBe(all.length);
   });
 
+  it.each(CHARACTER_IDS)('%s tem cor de cartão válida', (id) => {
+    const { cardColor } = CHARACTERS[id];
+    expect(Number.isInteger(cardColor)).toBe(true);
+    expect(cardColor).toBeGreaterThanOrEqual(0x000000);
+    expect(cardColor).toBeLessThanOrEqual(0xffffff);
+  });
+
+  it('cada personagem tem um cartão de cor diferente', () => {
+    const colors = CHARACTER_IDS.map((id) => CHARACTERS[id].cardColor);
+    expect(new Set(colors).size).toBe(colors.length);
+  });
+
   it('tem um personagem padrão válido', () => {
     expect(CHARACTER_IDS).toContain(DEFAULT_CHARACTER_ID);
   });

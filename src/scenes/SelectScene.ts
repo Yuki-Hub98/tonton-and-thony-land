@@ -4,16 +4,20 @@ import {
   GAME_HEIGHT,
   SELECT_BG_FADE_MS,
   SELECT_BG_HOLD_MS,
+  SELECT_CARD_ALPHA,
+  SELECT_CARD_BORDER,
+  SELECT_CARD_BORDER_DIM,
+  SELECT_CARD_BORDER_DIM_ALPHA,
   SELECT_CARD_FOCUS_SCALE,
   SELECT_CARD_GAP,
   SELECT_CARD_HEIGHT,
+  SELECT_CARD_RADIUS,
   SELECT_CARD_TWEEN_MS,
   SELECT_CARD_WIDTH,
   SELECT_HEAD_MAX_HEIGHT,
   SELECT_HEAD_SIZE,
-  UI_CARD_COLOR,
-  UI_DIM_COLOR,
   UI_HIGHLIGHT_COLOR,
+  UI_LIGHT_COLOR,
 } from '../config/constants';
 import { SceneKeys } from '../config/keys';
 import { LEVELS } from '../config/levels';
@@ -31,7 +35,9 @@ import type { GameSceneData } from './GameScene';
 interface CharacterCard {
   id: CharacterId;
   container: Phaser.GameObjects.Container;
-  frame: Phaser.GameObjects.Rectangle;
+  /** Fundo arredondado, redesenhado ao mudar a seleção (a borda muda de cor e espessura). */
+  frame: Phaser.GameObjects.Graphics;
+  color: number;
   headController: HeadController;
 }
 
@@ -91,20 +97,22 @@ export class SelectScene extends Phaser.Scene {
   private createCard(id: CharacterId, index: number, x: number, y: number): CharacterCard {
     const character = CHARACTERS[id];
 
-    const frame = this.add
-      .rectangle(0, 0, SELECT_CARD_WIDTH, SELECT_CARD_HEIGHT, UI_CARD_COLOR)
+    // Graphics desenha o cartão arredondado; a Zone invisível por cima recebe o toque/clique.
+    const frame = this.add.graphics();
+    const hitArea = this.add
+      .zone(0, 0, SELECT_CARD_WIDTH, SELECT_CARD_HEIGHT)
       .setInteractive({ useHandCursor: true });
     const head = this.add.image(0, -SELECT_CARD_HEIGHT * 0.1, character.heads.idle[0] ?? '');
     const name = this.add
       .text(0, SELECT_CARD_HEIGHT * 0.36, character.displayName, TextStyles.cardName)
       .setOrigin(0.5);
 
-    // Container agrupa os três objetos: mover ou escalar o container afeta todos juntos.
-    const container = this.add.container(x, y, [frame, head, name]);
+    // Container agrupa os objetos: mover ou escalar o container afeta todos juntos.
+    const container = this.add.container(x, y, [frame, head, name, hitArea]);
 
     // Mouse em cima seleciona; toque/clique escolhe direto (um toque só, bom para criança).
-    frame.on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => this.select(index));
-    frame.on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
+    hitArea.on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => this.select(index));
+    hitArea.on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
       this.select(index);
       this.confirm();
     });
@@ -115,20 +123,33 @@ export class SelectScene extends Phaser.Scene {
       this.time.now,
       fitHeadInBox(character.heads.photo, SELECT_HEAD_SIZE, SELECT_HEAD_MAX_HEIGHT),
     );
-    return { id, container, frame, headController };
+    return { id, container, frame, color: character.cardColor, headController };
   }
 
   private select(index: number): void {
     this.selectedIndex = index;
     this.cards.forEach((card, i) => {
       const selected = i === index;
-      card.frame.setStrokeStyle(selected ? 6 : 3, selected ? UI_HIGHLIGHT_COLOR : UI_DIM_COLOR);
+      this.drawCard(card, selected);
       this.tweens.add({
         targets: card.container,
         scale: selected ? SELECT_CARD_FOCUS_SCALE : 1,
         duration: SELECT_CARD_TWEEN_MS,
       });
     });
+  }
+
+  /** Cartão na cor do personagem; o escolhido ganha borda amarela grossa. */
+  private drawCard({ frame, color }: CharacterCard, selected: boolean): void {
+    const left = -SELECT_CARD_WIDTH / 2;
+    const top = -SELECT_CARD_HEIGHT / 2;
+    frame
+      .clear()
+      .fillStyle(color, SELECT_CARD_ALPHA)
+      .fillRoundedRect(left, top, SELECT_CARD_WIDTH, SELECT_CARD_HEIGHT, SELECT_CARD_RADIUS);
+    if (selected) frame.lineStyle(SELECT_CARD_BORDER, UI_HIGHLIGHT_COLOR, 1);
+    else frame.lineStyle(SELECT_CARD_BORDER_DIM, UI_LIGHT_COLOR, SELECT_CARD_BORDER_DIM_ALPHA);
+    frame.strokeRoundedRect(left, top, SELECT_CARD_WIDTH, SELECT_CARD_HEIGHT, SELECT_CARD_RADIUS);
   }
 
   private confirm(): void {
