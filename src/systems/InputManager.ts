@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import type { ReleaseSource } from '../logic/movement';
 import type { VirtualButtons } from '../logic/VirtualButtons';
 import type { Action } from '../types';
 
@@ -49,11 +50,11 @@ export class InputManager {
     return keyPressed || touchPressed;
   }
 
-  /** A ação foi solta neste frame. */
-  justReleased(action: Action): boolean {
-    const keyReleased =
+  /** A ação foi solta neste frame, separado por origem (as regras podem tratar diferente). */
+  justReleased(action: Action): ReleaseSource {
+    const keyboard =
       this.keys[action].filter((key) => Phaser.Input.Keyboard.JustUp(key)).length > 0;
-    const touchReleased = this.touch?.consumeReleased(action) ?? false;
-    return keyReleased || touchReleased;
+    const touch = this.touch?.consumeReleased(action) ?? false;
+    return { keyboard, touch };
   }
 }
