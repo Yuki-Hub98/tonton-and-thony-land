@@ -44,7 +44,7 @@ import {
 } from '../logic/bodyAnimation';
 import type { Direction } from '../logic/enemyPatrol';
 import { headCropBelowChin, type HeadPhoto } from '../logic/headLayout';
-import { canJump, cutJumpVelocity, horizontalVelocity } from '../logic/movement';
+import { canJump, cutJumpVelocity, horizontalVelocity, shouldCutJump } from '../logic/movement';
 import type { Point } from '../logic/respawnPoint';
 import type { InputManager } from '../systems/InputManager';
 
@@ -136,7 +136,11 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       this.setVelocityY(PLAYER_JUMP_VELOCITY);
     }
     this.setVelocityY(
-      cutJumpVelocity(this.body.velocity.y, input.justReleased('jump'), JUMP_CUT_FACTOR),
+      cutJumpVelocity(
+        this.body.velocity.y,
+        shouldCutJump(input.justReleased('jump')),
+        JUMP_CUT_FACTOR,
+      ),
     );
 
     this.playBodyAnimation(

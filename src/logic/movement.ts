@@ -16,6 +16,21 @@ export function canJump(jumpJustPressed: boolean, onGround: boolean): boolean {
   return jumpJustPressed && onGround;
 }
 
+/** De onde veio a soltura de um botão neste frame. */
+export interface ReleaseSource {
+  keyboard: boolean;
+  touch: boolean;
+}
+
+/**
+ * Soltar o pulo corta a subida só no teclado. No toque a criança dá um toque rápido
+ * (às vezes começa e termina no mesmo frame), e o pulo sairia sempre baixo: no celular
+ * o pulo é sempre alto.
+ */
+export function shouldCutJump(released: ReleaseSource): boolean {
+  return released.keyboard;
+}
+
 /**
  * Pulo variável: no frame em que o botão é solto, se ainda está subindo, a subida é cortada.
  * Toque rápido = pulo baixo; segurar = pulo alto. Velocidade negativa = subindo.
