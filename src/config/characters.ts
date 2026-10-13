@@ -1,13 +1,18 @@
 // Definição dos personagens. Tudo que muda entre Anthony e Antonela fica aqui,
 // para nenhuma cena precisar de if (personagem === 'anthony').
 import type { ArtPoint } from '../logic/bodyAnimation';
+import type { HeadPhoto } from '../logic/headLayout';
 import { neckPoints } from './bodySprite';
 import { TextureKeys } from './keys';
 
 export type CharacterId = 'anthony' | 'antonela';
 
-/** Fotos de cabeça que todo personagem tem. O nome é também o nome do arquivo .png. */
-export const HEAD_POSES = ['idle-1', 'idle-2', 'idle-3', 'sad', 'happy'] as const;
+/**
+ * Fotos de cabeça que todo personagem tem. O nome é também o nome do arquivo .png.
+ * Para o slide do humor normal ganhar mais fotos, acrescente 'idle-2', 'idle-3'... aqui e em
+ * heads.idle de cada personagem.
+ */
+export const HEAD_POSES = ['idle-1', 'sad', 'happy'] as const;
 export type HeadPose = (typeof HEAD_POSES)[number];
 
 export interface CharacterDef {
@@ -17,8 +22,14 @@ export interface CharacterDef {
    * (o id e as pastas das fotos são internos).
    */
   displayName: string;
-  /** Chaves de textura das fotos (formato `<id>-<pose>`). */
-  heads: { idle: string[]; sad: string; happy: string };
+  heads: {
+    /** Chaves de textura das fotos (formato `<id>-<pose>`). */
+    idle: string[];
+    sad: string;
+    happy: string;
+    /** Formato das fotos: quadrada ou com o cabelo comprido abaixo do queixo. */
+    photo: HeadPhoto;
+  };
   /**
    * Equipamento da fase. A primeira textura vai na mão da frente (e aparece no item a pegar);
    * as outras, na mão de trás.
@@ -42,9 +53,10 @@ export const CHARACTERS: Record<CharacterId, CharacterDef> = {
     id: 'anthony',
     displayName: 'Thony',
     heads: {
-      idle: ['anthony-idle-1', 'anthony-idle-2', 'anthony-idle-3'],
+      idle: ['anthony-idle-1'],
       sad: 'anthony-sad',
       happy: 'anthony-happy',
+      photo: { shape: 'square' },
     },
     equipment: { name: 'Vassoura e pá', textures: [TextureKeys.Broom, TextureKeys.Shovel] },
     // Macacão vermelho, como na arte da abertura.
@@ -59,9 +71,12 @@ export const CHARACTERS: Record<CharacterId, CharacterDef> = {
     id: 'antonela',
     displayName: 'Tonton',
     heads: {
-      idle: ['antonela-idle-1', 'antonela-idle-2', 'antonela-idle-3'],
+      idle: ['antonela-idle-1'],
       sad: 'antonela-sad',
       happy: 'antonela-happy',
+      // Fotos de 284 px de largura alinhadas pelos olhos: o queixo fica a 290 px do topo e
+      // o cabelo comprido continua abaixo dele.
+      photo: { shape: 'withHair', headHeight: 290, chinY: 290 },
     },
     equipment: { name: 'Vassoura', textures: [TextureKeys.Broom] },
     // Vestido rosa, como na arte da abertura.

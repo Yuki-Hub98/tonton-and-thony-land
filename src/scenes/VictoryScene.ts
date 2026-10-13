@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { BackgroundSlideshow } from '../components/BackgroundSlideshow';
 import { BlinkingPrompt } from '../components/BlinkingPrompt';
+import { fitHeadInBox } from '../components/headSizing';
 import { CHARACTERS, type CharacterId } from '../config/characters';
 import {
   CELEBRATE_HOP_HEIGHT,
@@ -12,6 +13,7 @@ import {
   GAME_HEIGHT,
   VICTORY_BG_FADE_MS,
   VICTORY_BG_HOLD_MS,
+  VICTORY_HEAD_MAX_HEIGHT,
   VICTORY_HEAD_SIZE,
 } from '../config/constants';
 import { SceneKeys } from '../config/keys';
@@ -53,9 +55,8 @@ export class VictoryScene extends Phaser.Scene {
     this.createConfetti();
 
     this.add.text(centerX, GAME_HEIGHT * 0.15, TEXTS.victory, TextStyles.title).setOrigin(0.5);
-    const head = this.add
-      .image(centerX, GAME_HEIGHT * 0.52, character.heads.happy)
-      .setDisplaySize(VICTORY_HEAD_SIZE, VICTORY_HEAD_SIZE);
+    const head = this.add.image(centerX, GAME_HEIGHT * 0.52, character.heads.happy);
+    fitHeadInBox(character.heads.photo, VICTORY_HEAD_SIZE, VICTORY_HEAD_MAX_HEIGHT)(head);
     this.tweens.add({
       targets: head,
       y: head.y - CELEBRATE_HOP_HEIGHT,

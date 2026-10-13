@@ -1,6 +1,7 @@
 import type Phaser from 'phaser';
-import { HAPPY_DURATION_MS, HEAD_SIZE, IDLE_SLIDE_MS, SAD_DURATION_MS } from '../config/constants';
+import { HAPPY_DURATION_MS, IDLE_SLIDE_MS, SAD_DURATION_MS } from '../config/constants';
 import { HeadMood, resolveHeadTexture, type HeadEvent, type HeadPoses } from '../logic/HeadMood';
+import type { HeadFit } from './headSizing';
 
 /** Aplica o humor (HeadMood) na imagem da cabeça, trocando a foto quando ele muda. */
 export class HeadController {
@@ -11,8 +12,8 @@ export class HeadController {
     private readonly head: Phaser.GameObjects.Image,
     private readonly poses: HeadPoses,
     startTime: number,
-    /** Tamanho da cabeça na tela (na fase é HEAD_SIZE; na seleção é maior). */
-    private readonly displaySize: number = HEAD_SIZE,
+    /** Tamanho e origem da cabeça (na fase, encaixada no queixo; na seleção, maior e centrada). */
+    private readonly fit: HeadFit,
   ) {
     this.mood = new HeadMood(
       {
@@ -36,8 +37,9 @@ export class HeadController {
     const texture = resolveHeadTexture(this.mood.current(now), this.poses);
     if (texture === this.currentTexture) return;
 
-    // Fotos e placeholders podem ter tamanhos diferentes; a cabeça sempre aparece com displaySize.
-    this.head.setTexture(texture).setDisplaySize(this.displaySize, this.displaySize);
+    // Fotos e placeholders podem ter tamanhos diferentes; o fit recalcula a cada troca.
+    this.head.setTexture(texture);
+    this.fit(this.head);
     this.currentTexture = texture;
   }
 }

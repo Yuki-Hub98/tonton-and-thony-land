@@ -142,8 +142,6 @@ const SPRITE_ASSETS: readonly ImageAsset[] = [
 /** Cada foto ganha um rosto diferente, para dar para ver o slide e os humores sem arte real. */
 const PLACEHOLDER_FACES: Record<HeadPose, FaceSpec> = {
   'idle-1': { expression: 'neutral', lookX: 0 },
-  'idle-2': { expression: 'neutral', lookX: -1 },
-  'idle-3': { expression: 'neutral', lookX: 1 },
   sad: { expression: 'sad', lookX: 0 },
   happy: { expression: 'happy', lookX: 0 },
 };

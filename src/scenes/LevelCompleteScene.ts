@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { BackgroundSlideshow } from '../components/BackgroundSlideshow';
 import { BlinkingPrompt } from '../components/BlinkingPrompt';
+import { fitHeadInBox } from '../components/headSizing';
 import { CHARACTERS, type CharacterId } from '../config/characters';
 import {
   CELEBRATE_HOP_HEIGHT,
@@ -8,6 +9,7 @@ import {
   GAME_HEIGHT,
   LEVEL_COMPLETE_BG_FADE_MS,
   LEVEL_COMPLETE_BG_HOLD_MS,
+  MENU_HEAD_MAX_HEIGHT,
   SELECT_HEAD_SIZE,
 } from '../config/constants';
 import { SceneKeys } from '../config/keys';
@@ -68,9 +70,8 @@ export class LevelCompleteScene extends Phaser.Scene {
       .text(centerX, GAME_HEIGHT * 0.15, TEXTS.levelComplete(levelName), TextStyles.heading)
       .setOrigin(0.5);
 
-    const head = this.add
-      .image(centerX, GAME_HEIGHT * 0.48, character.heads.happy)
-      .setDisplaySize(SELECT_HEAD_SIZE, SELECT_HEAD_SIZE);
+    const head = this.add.image(centerX, GAME_HEIGHT * 0.48, character.heads.happy);
+    fitHeadInBox(character.heads.photo, SELECT_HEAD_SIZE, MENU_HEAD_MAX_HEIGHT)(head);
     // Pulinho de comemoração.
     this.tweens.add({
       targets: head,

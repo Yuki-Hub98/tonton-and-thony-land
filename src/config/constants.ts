@@ -128,6 +128,8 @@ export const HUD_EQUIPMENT_ICON_HEIGHT = 40;
 
 /** Tela de vitória: cabeça grande e chuva de confete. */
 export const VICTORY_HEAD_SIZE = 200;
+/** Altura máxima da foto inteira na vitória (a foto com cabelo comprido diminui para caber). */
+export const VICTORY_HEAD_MAX_HEIGHT = 300;
 export const CONFETTI_COUNT = 60;
 export const CONFETTI_SIZE = 12;
 export const CONFETTI_FALL_MS = 2500;
@@ -152,7 +154,10 @@ export const MENU_BUTTON_GAP = 40;
 /** Posição do jogador na tela quando a câmera anda: 0 = borda esquerda, 1 = direita. */
 export const CAMERA_LEAD_RATIO = 0.4;
 
-/** Tamanho da cabeça na tela, em pixels (a foto é redimensionada para isso). */
+/**
+ * Tamanho da cabeça na tela, em pixels (a foto é redimensionada para isso). Na foto com
+ * cabelo comprido, é a altura do topo até o queixo; o cabelo pende abaixo.
+ */
 export const HEAD_SIZE = 44;
 /** Quanto a cabeça desce sobre o corpo, para parecer encaixada (pescoço). */
 export const HEAD_OVERLAP_Y = 4;
@@ -175,9 +180,16 @@ export const PROMPT_BLINK_MS = 700;
 
 /** Cartões da tela de seleção de personagem. */
 export const SELECT_CARD_WIDTH = 260;
-export const SELECT_CARD_HEIGHT = 300;
+export const SELECT_CARD_HEIGHT = 340;
 export const SELECT_CARD_GAP = 80;
 export const SELECT_HEAD_SIZE = 160;
+/** Altura máxima da foto inteira no cartão (a foto com cabelo comprido diminui para caber). */
+export const SELECT_HEAD_MAX_HEIGHT = 250;
+/**
+ * Altura máxima da foto inteira nas telas de continuar, fase concluída e game over, entre o
+ * título e os botões.
+ */
+export const MENU_HEAD_MAX_HEIGHT = 260;
 /** O cartão escolhido cresce um pouco para destacar. */
 export const SELECT_CARD_FOCUS_SCALE = 1.08;
 export const SELECT_CARD_TWEEN_MS = 120;

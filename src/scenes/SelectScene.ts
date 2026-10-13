@@ -9,6 +9,7 @@ import {
   SELECT_CARD_HEIGHT,
   SELECT_CARD_TWEEN_MS,
   SELECT_CARD_WIDTH,
+  SELECT_HEAD_MAX_HEIGHT,
   SELECT_HEAD_SIZE,
   UI_CARD_COLOR,
   UI_DIM_COLOR,
@@ -20,6 +21,7 @@ import { TextStyles } from '../config/textStyles';
 import { TEXTS } from '../config/texts';
 import { BackgroundSlideshow } from '../components/BackgroundSlideshow';
 import { HeadController } from '../components/HeadController';
+import { fitHeadInBox } from '../components/headSizing';
 import { moveSelection } from '../logic/menuSelection';
 import { InputManager } from '../systems/InputManager';
 import { SaveManager } from '../systems/SaveManager';
@@ -111,7 +113,7 @@ export class SelectScene extends Phaser.Scene {
       head,
       character.heads,
       this.time.now,
-      SELECT_HEAD_SIZE,
+      fitHeadInBox(character.heads.photo, SELECT_HEAD_SIZE, SELECT_HEAD_MAX_HEIGHT),
     );
     return { id, container, frame, headController };
   }
