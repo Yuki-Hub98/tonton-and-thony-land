@@ -123,7 +123,7 @@ const SPRITE_ASSETS: readonly ImageAsset[] = [
   {
     // Tela de abertura (a arte já traz o nome do jogo). Qualquer tamanho: cobre a tela sem distorcer.
     key: TextureKeys.TitleBackground,
-    path: 'assets/ui/title.jpg',
+    path: 'assets/ui/title.png',
     placeholder: { width: 960, height: 540, color: 0x1d2b53 },
   },
   {
