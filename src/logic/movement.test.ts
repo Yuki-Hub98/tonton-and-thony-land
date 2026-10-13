@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { canJump, cutJumpVelocity, horizontalVelocity } from './movement';
+import { canJump, cutJumpVelocity, horizontalVelocity, shouldCutJump } from './movement';
 
 describe('horizontalVelocity', () => {
   it('fica parado sem input', () => {
@@ -44,5 +44,19 @@ describe('cutJumpVelocity', () => {
 
   it('não mexe na queda', () => {
     expect(cutJumpVelocity(300, true, 0.5)).toBe(300);
+  });
+});
+
+describe('shouldCutJump', () => {
+  it('soltar a tecla corta o pulo (segurar = pulo alto, tocar = pulo baixo)', () => {
+    expect(shouldCutJump({ keyboard: true, touch: false })).toBe(true);
+  });
+
+  it('soltar o botão de toque não corta: no celular o pulo é sempre alto', () => {
+    expect(shouldCutJump({ keyboard: false, touch: true })).toBe(false);
+  });
+
+  it('sem soltar nada, não corta', () => {
+    expect(shouldCutJump({ keyboard: false, touch: false })).toBe(false);
   });
 });
