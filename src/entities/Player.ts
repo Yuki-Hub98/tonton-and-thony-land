@@ -17,6 +17,7 @@ import {
   BODY_WALK_MIN_SPEED,
   CAR_HEAD_ANCHOR_X,
   CAR_HEAD_ANCHOR_Y,
+  CAR_JUMP_VELOCITY,
   CAR_SPEED,
   DEATH_JUMP_VELOCITY,
   HAND_ITEM_GRIP_Y,
@@ -211,7 +212,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       blockedAhead: this.body.blocked.right,
       groundAhead,
     });
-    if (jump) this.setVelocityY(PLAYER_JUMP_VELOCITY);
+    if (jump) this.setVelocityY(CAR_JUMP_VELOCITY);
   }
 
   /** Pulinho depois de pisar num inimigo. */

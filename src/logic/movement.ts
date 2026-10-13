@@ -43,3 +43,8 @@ export function cutJumpVelocity(
   const rising = velocityY < 0;
   return rising && jumpJustReleased ? velocityY * cutFactor : velocityY;
 }
+
+/** Altura máxima de um pulo (pixels), pela física: velocidade² / (2 × gravidade). */
+export function jumpHeight(jumpVelocity: number, gravity: number): number {
+  return (jumpVelocity * jumpVelocity) / (2 * gravity);
+}
