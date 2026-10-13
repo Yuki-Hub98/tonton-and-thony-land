@@ -1,14 +1,224 @@
 // Números do jogo. Ajuste a dificuldade e o visual mexendo só aqui.
 
-/** Resolução lógica do jogo. O Phaser escala esse tamanho para caber na tela. */
-export const GAME_WIDTH = 960;
+/**
+ * Resolução lógica do jogo. A altura é fixa; a largura acompanha a proporção da tela
+ * (ver logic/screenSize.ts), entre o mínimo (tablet 4:3) e o máximo (celular bem comprido).
+ * Nas cenas, use this.scale.width para saber a largura atual.
+ */
 export const GAME_HEIGHT = 540;
+export const GAME_MIN_WIDTH = 720;
+export const GAME_MAX_WIDTH = 1280;
 
 export const BACKGROUND_COLOR = '#1d2b53';
+
+/** Altura das imagens de fundo das fases (public/assets/bg/). O sol/lua usa a mesma escala. */
+export const BACKGROUND_TEXTURE_HEIGHT = 900;
+
+/**
+ * Profundidade (depth) do fundo: quem tem depth menor é desenhado antes, por baixo.
+ * Cada camada usa BACKGROUND_DEPTH + 2 × posição (céu -100, nuvens -98, colinas -96, frente -94),
+ * e o sol/lua fica em -99, entre o céu e as nuvens. Mapa, jogador e inimigos ficam no 0.
+ */
+export const BACKGROUND_DEPTH = -100;
 
 /** Gravidade da física arcade, em pixels por segundo². */
 export const GRAVITY_Y = 1200;
 
+/** Espera entre tocar a bandeira e ir para a tela de fase concluída. */
+export const LEVEL_COMPLETE_DELAY_MS = 800;
+
+/** Pulinho da cabeça na tela de fase concluída. */
+export const CELEBRATE_HOP_HEIGHT = 20;
+export const CELEBRATE_HOP_MS = 350;
+
 /** Barra de progresso da PreloadScene. */
 export const PRELOAD_BAR_WIDTH = 400;
 export const PRELOAD_BAR_HEIGHT = 24;
+
+/** Tamanho de um bloco de chão/plataforma, em pixels. */
+export const TILE_SIZE = 32;
+
+/** Velocidade horizontal do jogador, em pixels por segundo. */
+export const PLAYER_SPEED = 220;
+/** Impulso do pulo (negativo = para cima), em pixels por segundo. */
+export const PLAYER_JUMP_VELOCITY = -620;
+/** Ao soltar o pulo ainda subindo, a velocidade é multiplicada por isto (pulo baixo). */
+export const JUMP_CUT_FACTOR = 0.45;
+
+/** Vidas no começo do jogo. Elas passam de uma fase para a outra. */
+export const STARTING_LIVES = 3;
+/** Invencibilidade depois de voltar à fase (o jogador fica piscando). */
+export const INVINCIBLE_MS = 2000;
+/** Velocidade do pisca-pisca da invencibilidade (meio ciclo). */
+export const BLINK_MS = 100;
+/** Tempo entre morrer e voltar à fase (ou ir para o game over). */
+export const DEATH_DELAY_MS = 1500;
+/** Pulinho da morte, antes de cair para fora da tela. */
+export const DEATH_JUMP_VELOCITY = -450;
+
+/** Velocidade do inimigo que anda. */
+export const ENEMY_SPEED = 60;
+/** Pulinho do jogador ao pisar num inimigo. */
+export const STOMP_BOUNCE_VELOCITY = -380;
+/** Folga (px) para contar como pisão: pés um pouco abaixo do topo do inimigo ainda valem. */
+export const STOMP_TOLERANCE = 10;
+/** Tempo do inimigo amassado antes de sumir. */
+export const ENEMY_SQUASH_MS = 250;
+/** Os espinhos machucam só a parte de dentro do tile: raspar na beirada não conta. */
+export const HAZARD_INSET = 6;
+/** Inimigo derrotado pelo golpe: voa de cabeça para baixo e some. */
+export const ENEMY_KNOCKOUT_DISTANCE = 48;
+export const ENEMY_KNOCKOUT_HEIGHT = 40;
+export const ENEMY_KNOCKOUT_MS = 350;
+
+/** Golpe com o equipamento: alcance à frente do corpo (px) e espera entre um golpe e outro. */
+export const ATTACK_REACH = 40;
+export const ATTACK_COOLDOWN_MS = 300;
+
+/**
+ * Corpo e carro são desenhados em 4× (quadro de 176×160, carro de 224×128) para ficarem
+ * nítidos no celular; na fase aparecem em 1/4 (corpo 44×40, carro 56×32).
+ */
+export const BODY_SCALE = 0.25;
+/** Hitbox do corpo na tela: só o tronco e as pernas, sem os braços abertos. */
+export const BODY_HITBOX_WIDTH = 28;
+export const BODY_HITBOX_HEIGHT = 40;
+/** Velocidade da caminhada (quadros por segundo) e abaixo de que velocidade conta como parado. */
+export const BODY_WALK_FPS = 11;
+export const BODY_WALK_MIN_SPEED = 5;
+
+/**
+ * Item na mão: altura na tela e ponto da pegada (fração da altura da imagem, a partir do topo).
+ * A mão fica no punho da arte (BODY_NEAR_HAND/BODY_FAR_HAND, ~18 px acima dos pés); segurando
+ * um pouco acima das cerdas, a ponta da vassoura inclinada chega bem no chão.
+ */
+export const HAND_ITEM_HEIGHT = 48;
+export const HAND_ITEM_GRIP_Y = 0.58;
+/** Inclinação do item parado (graus): a ponta vai um pouco para a frente. */
+export const HAND_ITEM_REST_ANGLE = 25;
+/** Até onde o item gira no golpe (graus) e quanto tempo leva para ir (a volta leva o mesmo). */
+export const HAND_ITEM_SWING_ANGLE = 110;
+export const HAND_ITEM_SWING_MS = 90;
+
+/** Carrinho: velocidade da direção automática até a bandeira. */
+export const CAR_SPEED = 260;
+/**
+ * Onde fica a base da cabeça dentro do carro, em pixels da imagem car.png (224×128):
+ * no banco do motorista, atrás do para-brisa.
+ */
+export const CAR_HEAD_ANCHOR_X = 85;
+export const CAR_HEAD_ANCHOR_Y = 60;
+
+/** Item coletável: sobe e desce parado no lugar, e some subindo ao ser pego. */
+export const PICKUP_BOB_HEIGHT = 6;
+export const PICKUP_BOB_MS = 600;
+export const PICKUP_COLLECT_RISE = 24;
+export const PICKUP_COLLECT_MS = 250;
+/** Altura do item coletável na tela, seja qual for o tamanho da imagem. */
+export const PICKUP_EQUIPMENT_HEIGHT = 40;
+/** Carro coletável: a mesma escala do carro dirigido (128 px da arte × BODY_SCALE). */
+export const PICKUP_CAR_HEIGHT = 32;
+
+/** HUD: ícones de vida no canto da tela. */
+export const HUD_MARGIN = 16;
+export const HUD_LIFE_ICON_SIZE = 36;
+export const HUD_LIFE_ICON_GAP = 6;
+/** HUD: altura do ícone do equipamento, no canto superior direito. */
+export const HUD_EQUIPMENT_ICON_HEIGHT = 40;
+
+/** Tela de vitória: cabeça grande e chuva de confete. */
+export const VICTORY_HEAD_SIZE = 200;
+/** Altura máxima da foto inteira na vitória (a foto com cabelo comprido diminui para caber). */
+export const VICTORY_HEAD_MAX_HEIGHT = 300;
+export const CONFETTI_COUNT = 60;
+export const CONFETTI_SIZE = 12;
+export const CONFETTI_FALL_MS = 2500;
+export const CONFETTI_COLORS = [0xff004d, 0xffa300, 0xffec27, 0x00e436, 0x29adff, 0xff77a8];
+
+/** Botões de toque (só em aparelho com toque): tamanho, distância da borda e entre eles. */
+export const TOUCH_BUTTON_SIZE = 96;
+export const TOUCH_BUTTON_MARGIN = 24;
+export const TOUCH_BUTTON_GAP = 20;
+/** Transparência: solto, apertado e o "bater" antes de pegar o equipamento. */
+export const TOUCH_BUTTON_ALPHA = 0.35;
+export const TOUCH_BUTTON_PRESSED_ALPHA = 0.7;
+export const TOUCH_BUTTON_DISABLED_ALPHA = 0.12;
+/** Dedos ao mesmo tempo (ex.: segurar "direita" e tocar "pular"). */
+export const TOUCH_MAX_POINTERS = 3;
+
+/** Botões da tela de game over. */
+export const MENU_BUTTON_WIDTH = 320;
+export const MENU_BUTTON_HEIGHT = 72;
+export const MENU_BUTTON_GAP = 40;
+
+/** Posição do jogador na tela quando a câmera anda: 0 = borda esquerda, 1 = direita. */
+export const CAMERA_LEAD_RATIO = 0.4;
+
+/**
+ * Tamanho da cabeça na tela, em pixels (a foto é redimensionada para isso). Na foto com
+ * cabelo comprido, é a altura do topo até o queixo; o cabelo pende abaixo.
+ */
+export const HEAD_SIZE = 44;
+/** Quanto a cabeça desce sobre o corpo, para parecer encaixada (pescoço). */
+export const HEAD_OVERLAP_Y = 4;
+/** Tamanho da cabeça desenhada como placeholder enquanto não há foto. */
+export const HEAD_PLACEHOLDER_SIZE = 64;
+
+/** Tempo de cada foto no slide da cabeça normal. */
+export const IDLE_SLIDE_MS = 1500;
+/** Quanto tempo a cabeça fica feliz depois de pegar um item. */
+export const HAPPY_DURATION_MS = 2500;
+/** Quanto tempo a cabeça fica triste depois de levar dano (sem morrer). */
+export const SAD_DURATION_MS = 1500;
+
+/** Altura (fração da tela) do "toque para começar": no meio sem arte, embaixo com a arte. */
+export const TITLE_PROMPT_Y_RATIO = 0.68;
+export const TITLE_PROMPT_Y_RATIO_WITH_ART = 0.94;
+
+/** Tempo do pisca-pisca do "toque para começar", em ms (meio ciclo). */
+export const PROMPT_BLINK_MS = 700;
+
+/** Cartões da tela de seleção de personagem. */
+export const SELECT_CARD_WIDTH = 260;
+export const SELECT_CARD_HEIGHT = 340;
+export const SELECT_CARD_GAP = 80;
+/** Cantos arredondados do cartão e transparência (deixa ver um pouco o cenário atrás). */
+export const SELECT_CARD_RADIUS = 28;
+export const SELECT_CARD_ALPHA = 0.85;
+/** Borda do cartão: escolhido (grossa, amarela) e não escolhido (fina, branca). */
+export const SELECT_CARD_BORDER = 6;
+export const SELECT_CARD_BORDER_DIM = 3;
+export const SELECT_CARD_BORDER_DIM_ALPHA = 0.8;
+export const SELECT_HEAD_SIZE = 160;
+/** Altura máxima da foto inteira no cartão (a foto com cabelo comprido diminui para caber). */
+export const SELECT_HEAD_MAX_HEIGHT = 250;
+/**
+ * Altura máxima da foto inteira nas telas de continuar, fase concluída e game over, entre o
+ * título e os botões.
+ */
+export const MENU_HEAD_MAX_HEIGHT = 260;
+/** O cartão escolhido cresce um pouco para destacar. */
+export const SELECT_CARD_FOCUS_SCALE = 1.08;
+export const SELECT_CARD_TWEEN_MS = 120;
+/**
+ * Fundos das fases atrás das telas de menu (ver BackgroundSlideshow). O cenário passa devagar,
+ * como se a câmera andasse sozinha: pixels por milissegundo (0,06 = 60 px/s).
+ */
+export const MENU_BG_SCROLL_SPEED = 0.06;
+/** Seleção: os fundos das 3 fases se revezam sem parar (tempo de cada um e da troca). */
+export const SELECT_BG_HOLD_MS = 6000;
+export const SELECT_BG_FADE_MS = 1500;
+/** Fase concluída: mostra a fase que acabou e depois se transforma na próxima. */
+export const LEVEL_COMPLETE_BG_HOLD_MS = 1500;
+export const LEVEL_COMPLETE_BG_FADE_MS = 1500;
+/** Game over: fundo da fase em que perdeu, escurecido (0 = normal, 1 = preto). */
+export const GAME_OVER_BG_DIM = 0.4;
+/** Vitória: as 3 fases se revezam, como uma retrospectiva (tempo de cada uma e da troca). */
+export const VICTORY_BG_HOLD_MS = 4000;
+export const VICTORY_BG_FADE_MS = 1500;
+
+/** Cores da interface. */
+export const UI_HIGHLIGHT_COLOR = 0xffec27;
+export const UI_LIGHT_COLOR = 0xffffff;
+export const UI_DIM_COLOR = 0x5f6b99;
+export const UI_CARD_COLOR = 0x29366f;

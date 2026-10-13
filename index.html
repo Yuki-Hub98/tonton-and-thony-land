@@ -20,10 +20,38 @@
         width: 100%;
         height: 100%;
       }
+      /* Aviso "gire o celular": só em tela de toque em pé (mesma regra de PORTRAIT_TOUCH_QUERY). */
+      #rotate-warning {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 10;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        padding: 24px;
+        background: #1d2b53;
+        color: #ffffff;
+        font:
+          bold 32px 'Trebuchet MS',
+          sans-serif;
+        text-align: center;
+      }
+      #rotate-warning::before {
+        content: '📱↻';
+        font-size: 72px;
+      }
+      @media (orientation: portrait) and (pointer: coarse) {
+        #rotate-warning {
+          display: flex;
+        }
+      }
     </style>
   </head>
   <body>
     <div id="game"></div>
+    <div id="rotate-warning" role="alert"></div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

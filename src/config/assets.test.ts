@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { IMAGE_ASSETS } from './assets';
+import { BODY_FRAME_COUNT, BODY_FRAME_HEIGHT, BODY_FRAME_WIDTH } from './bodySprite';
+import { CHARACTER_IDS, CHARACTERS } from './characters';
 import { TextureKeys } from './keys';
 
 describe('IMAGE_ASSETS', () => {
@@ -10,12 +12,61 @@ describe('IMAGE_ASSETS', () => {
 
   it('tem um asset para cada TextureKey', () => {
     const keys = IMAGE_ASSETS.map((asset) => asset.key);
-    expect(keys.sort()).toEqual(Object.values(TextureKeys).sort());
+    for (const key of Object.values(TextureKeys)) {
+      expect(keys).toContain(key);
+    }
+  });
+
+  it.each(CHARACTER_IDS)('carrega todas as fotos de cabeça de %s', (id) => {
+    const { heads } = CHARACTERS[id];
+    const keys = IMAGE_ASSETS.map((asset) => asset.key);
+    for (const key of [...heads.idle, heads.sad, heads.happy]) {
+      expect(keys).toContain(key);
+    }
+  });
+
+  it.each(CHARACTER_IDS)('carrega as texturas do equipamento de %s', (id) => {
+    const keys = IMAGE_ASSETS.map((asset) => asset.key);
+    for (const key of CHARACTERS[id].equipment.textures) {
+      expect(keys).toContain(key);
+    }
+  });
+
+  it.each(CHARACTER_IDS)('carrega o corpo animado de %s como spritesheet', (id) => {
+    const asset = IMAGE_ASSETS.find((a) => a.key === CHARACTERS[id].body.texture);
+    expect(asset?.path).toBe(`assets/characters/${id}/body-${id}-3q-sheet.png`);
+    expect(asset?.frames).toEqual({
+      frameWidth: BODY_FRAME_WIDTH,
+      frameHeight: BODY_FRAME_HEIGHT,
+      count: BODY_FRAME_COUNT,
+    });
+  });
+
+  it('o placeholder de um spritesheet tem espaço exato para todos os quadros', () => {
+    for (const { frames, placeholder } of IMAGE_ASSETS) {
+      if (!frames) continue;
+      expect(placeholder.width).toBe(frames.frameWidth * frames.count);
+      expect(placeholder.height).toBe(frames.frameHeight);
+    }
+  });
+
+  it('procura as fotos em assets/characters/<id>/<pose>.png', () => {
+    const asset = IMAGE_ASSETS.find((a) => a.key === 'anthony-idle-1');
+    expect(asset?.path).toBe('assets/characters/anthony/idle-1.png');
   });
 
   it('usa caminhos relativos dentro de assets/, para funcionar com o base do GitHub Pages', () => {
     for (const asset of IMAGE_ASSETS) {
-      expect(asset.path).toMatch(/^assets\/.+\.png$/);
+      expect(asset.path).toMatch(/^assets\/.+\.(png|jpg)$/);
+    }
+  });
+
+  it('usa PNG nas fotos de cabeça (precisam de fundo transparente)', () => {
+    for (const id of CHARACTER_IDS) {
+      const { heads } = CHARACTERS[id];
+      for (const key of [...heads.idle, heads.sad, heads.happy]) {
+        expect(IMAGE_ASSETS.find((a) => a.key === key)?.path).toMatch(/\.png$/);
+      }
     }
   });
 
