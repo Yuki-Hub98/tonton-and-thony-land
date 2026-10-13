@@ -1,8 +1,9 @@
 import Phaser from 'phaser';
 import { BackgroundSlideshow } from '../components/BackgroundSlideshow';
 import { MenuButtons } from '../components/MenuButtons';
+import { fitHeadInBox } from '../components/headSizing';
 import { CHARACTERS, type CharacterId } from '../config/characters';
-import { GAME_HEIGHT, SELECT_HEAD_SIZE } from '../config/constants';
+import { GAME_HEIGHT, MENU_HEAD_MAX_HEIGHT, SELECT_HEAD_SIZE } from '../config/constants';
 import { SceneKeys } from '../config/keys';
 import { LEVELS } from '../config/levels';
 import { TextStyles } from '../config/textStyles';
@@ -46,9 +47,11 @@ export class ContinueScene extends Phaser.Scene {
     this.add
       .text(centerX, GAME_HEIGHT * 0.13, TEXTS.continueQuestion, TextStyles.heading)
       .setOrigin(0.5);
-    this.add
-      .image(centerX, GAME_HEIGHT * 0.42, character.heads.happy)
-      .setDisplaySize(SELECT_HEAD_SIZE, SELECT_HEAD_SIZE);
+    fitHeadInBox(
+      character.heads.photo,
+      SELECT_HEAD_SIZE,
+      MENU_HEAD_MAX_HEIGHT,
+    )(this.add.image(centerX, GAME_HEIGHT * 0.42, character.heads.happy));
     this.add.text(centerX, GAME_HEIGHT * 0.92, TEXTS.menuHint, TextStyles.hint).setOrigin(0.5);
 
     // "Continuar" vem primeiro: é o que a criança quase sempre quer.

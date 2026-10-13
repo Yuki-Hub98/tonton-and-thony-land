@@ -123,7 +123,7 @@ const SPRITE_ASSETS: readonly ImageAsset[] = [
   {
     // Tela de abertura (a arte já traz o nome do jogo). Qualquer tamanho: cobre a tela sem distorcer.
     key: TextureKeys.TitleBackground,
-    path: 'assets/ui/title.jpg',
+    path: 'assets/ui/title.png',
     placeholder: { width: 960, height: 540, color: 0x1d2b53 },
   },
   {
@@ -142,8 +142,6 @@ const SPRITE_ASSETS: readonly ImageAsset[] = [
 /** Cada foto ganha um rosto diferente, para dar para ver o slide e os humores sem arte real. */
 const PLACEHOLDER_FACES: Record<HeadPose, FaceSpec> = {
   'idle-1': { expression: 'neutral', lookX: 0 },
-  'idle-2': { expression: 'neutral', lookX: -1 },
-  'idle-3': { expression: 'neutral', lookX: 1 },
   sad: { expression: 'sad', lookX: 0 },
   happy: { expression: 'happy', lookX: 0 },
 };

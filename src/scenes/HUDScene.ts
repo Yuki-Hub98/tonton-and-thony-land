@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { fitHeadIcon } from '../components/headSizing';
 import { CHARACTERS, type CharacterId } from '../config/characters';
 import {
   HUD_EQUIPMENT_ICON_HEIGHT,
@@ -89,13 +90,19 @@ export class HUDScene extends Phaser.Scene {
   private showLives(lives: number): void {
     for (const icon of this.lifeIcons) icon.destroy();
 
-    const texture = CHARACTERS[this.hud.characterId].heads.idle[0] ?? '';
-    this.lifeIcons = Array.from({ length: lives }, (_, i) =>
-      this.add
-        .image(HUD_MARGIN + i * (HUD_LIFE_ICON_SIZE + HUD_LIFE_ICON_GAP), HUD_MARGIN, texture)
-        .setOrigin(0)
-        .setDisplaySize(HUD_LIFE_ICON_SIZE, HUD_LIFE_ICON_SIZE),
-    );
+    const { heads } = CHARACTERS[this.hud.characterId];
+    const texture = heads.idle[0] ?? '';
+    // Só o rosto: na foto com cabelo comprido, o cabelo abaixo do queixo fica de fora.
+    const fit = fitHeadIcon(heads.photo, HUD_LIFE_ICON_SIZE);
+    this.lifeIcons = Array.from({ length: lives }, (_, i) => {
+      const icon = this.add.image(
+        HUD_MARGIN + i * (HUD_LIFE_ICON_SIZE + HUD_LIFE_ICON_GAP),
+        HUD_MARGIN,
+        texture,
+      );
+      fit(icon);
+      return icon;
+    });
   }
 
   /** Um ícone por item do equipamento, no canto direito. Começam escondidos. */

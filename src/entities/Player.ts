@@ -25,6 +25,7 @@ import {
   HAND_ITEM_SWING_ANGLE,
   HAND_ITEM_SWING_MS,
   HEAD_OVERLAP_Y,
+  HEAD_SIZE,
   JUMP_CUT_FACTOR,
   PLAYER_JUMP_VELOCITY,
   PLAYER_SPEED,
@@ -32,6 +33,7 @@ import {
 } from '../config/constants';
 import { TextureKeys } from '../config/keys';
 import { HeadController } from '../components/HeadController';
+import { fitHeadAtChin } from '../components/headSizing';
 import { shouldAutoJump } from '../logic/autoDrive';
 import {
   chooseBodyAnimation,
@@ -41,6 +43,7 @@ import {
   type ArtPoint,
 } from '../logic/bodyAnimation';
 import type { Direction } from '../logic/enemyPatrol';
+import { headCropBelowChin, type HeadPhoto } from '../logic/headLayout';
 import { canJump, cutJumpVelocity, horizontalVelocity } from '../logic/movement';
 import type { Point } from '../logic/respawnPoint';
 import type { InputManager } from '../systems/InputManager';
@@ -62,6 +65,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
   private readonly head: Phaser.GameObjects.Image;
   private readonly headController: HeadController;
+  private readonly headPhoto: HeadPhoto;
   private readonly handItems: HandItem[];
   private readonly bodyTexture: string;
   private readonly neck: readonly ArtPoint[];
@@ -89,11 +93,16 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     // imagem (o Phaser multiplica pela escala); centralizado na largura e com os pés embaixo.
     this.body.setSize(BODY_HITBOX_WIDTH / BODY_SCALE, BODY_HITBOX_HEIGHT / BODY_SCALE);
 
-    // Origem da cabeça no queixo, para encaixar no pescoço.
-    this.head = scene.add
-      .image(x, y, character.heads.idle[0] ?? character.body.texture)
-      .setOrigin(0.5, 1);
-    this.headController = new HeadController(this.head, character.heads, scene.time.now);
+    // Origem da cabeça no queixo, para encaixar no pescoço. O cabelo comprido (se houver)
+    // pende abaixo do queixo, na frente do corpo.
+    this.headPhoto = character.heads.photo;
+    this.head = scene.add.image(x, y, character.heads.idle[0] ?? character.body.texture);
+    this.headController = new HeadController(
+      this.head,
+      character.heads,
+      scene.time.now,
+      fitHeadAtChin(this.headPhoto, HEAD_SIZE),
+    );
 
     const frontItems = frontTexture === undefined ? [] : [this.createHandItem(frontTexture, true)];
     this.handItems = [...backItems, ...frontItems];
@@ -179,6 +188,9 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.setTexture(TextureKeys.Car);
     // Sem argumentos, o hitbox passa a ter o tamanho da nova textura (o carro é mais largo e baixo).
     this.body.setSize();
+    // Cabeça atrás do carro: parece sentada no banco, e o cabelo comprido fica escondido pela
+    // lataria em vez de cobrir a lateral.
+    this.scene.children.moveBelow(this.head, this);
     this.headController.notify('pickedItem', now);
   }
 
@@ -258,6 +270,14 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         this.x + (CAR_HEAD_ANCHOR_X - this.width / 2) * this.scaleX,
         top + CAR_HEAD_ANCHOR_Y * this.scaleY,
       );
+      // O cabelo comprido termina na base do carro, sem passar por baixo das rodas.
+      const crop = headCropBelowChin(
+        this.headPhoto,
+        this.head,
+        this.head.scaleY,
+        (this.height - CAR_HEAD_ANCHOR_Y) * this.scaleY,
+      );
+      this.head.setCrop(crop.x, crop.y, crop.width, crop.height);
     } else {
       // No pescoço do quadro atual: desce junto com o tronco na caminhada e, como a pose é
       // meio de lado, fica um pouco à frente do meio (espelhado quando olha para a esquerda).
